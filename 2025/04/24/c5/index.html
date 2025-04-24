@@ -1,0 +1,381 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>C++学习笔记—cmake的新旧方法 | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="我们来详细拆解 include_directories() 和 target_include_directories() 的区别，并再次深入探讨 CMake 的旧方式与新方式（现代 CMake）。 include_directories() vs target_include_directories() 这两者的核心区别在于作用域 (Scope)：  include_directories([AF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++学习笔记—cmake的新旧方法">
+<meta property="og:url" content="https://feiyblog.netlify.app/2025/04/24/c5/index.html">
+<meta property="og:site_name" content="我的学习笔记">
+<meta property="og:description" content="我们来详细拆解 include_directories() 和 target_include_directories() 的区别，并再次深入探讨 CMake 的旧方式与新方式（现代 CMake）。 include_directories() vs target_include_directories() 这两者的核心区别在于作用域 (Scope)：  include_directories([AF">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png">
+<meta property="article:published_time" content="2025-04-24T06:11:32.000Z">
+<meta property="article:modified_time" content="2025-04-24T10:51:22.609Z">
+<meta property="article:author" content="Xue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "C++学习笔记—cmake的新旧方法",
+  "url": "https://feiyblog.netlify.app/2025/04/24/c5/",
+  "image": "https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png",
+  "datePublished": "2025-04-24T06:11:32.000Z",
+  "dateModified": "2025-04-24T10:51:22.609Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Xue",
+      "url": "https://feiyblog.netlify.app/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424131237614.png"><link rel="canonical" href="https://feiyblog.netlify.app/2025/04/24/c5/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'C++学习笔记—cmake的新旧方法',
+  isHighlightShrink: false,
+  isToc: false,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423091922134.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">C++学习笔记—cmake的新旧方法</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">C++学习笔记—cmake的新旧方法</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-24T06:11:32.000Z" title="发表于 2025-04-24 14:11:32">2025-04-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-24T10:51:22.609Z" title="更新于 2025-04-24 18:51:22">2025-04-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/C/">C++</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>我们来详细拆解 <code>include_directories()</code> 和 <code>target_include_directories()</code> 的区别，并再次深入探讨 CMake 的旧方式与新方式（现代 CMake）。</p>
+<p><strong><code>include_directories()</code> vs <code>target_include_directories()</code></strong></p>
+<p>这两者的核心区别在于<strong>作用域 (Scope)</strong>：</p>
+<ol>
+<li><strong><code>include_directories([AFTER|BEFORE] [SYSTEM] dir1 [dir2 ...])</code></strong><ul>
+<li><strong>作用:</strong> 将指定的目录 (<code>dir1</code>, <code>dir2</code> 等) 添加到<strong>当前 <code>CMakeLists.txt</code> 文件以及所有在它之后处理的子目录</strong>的头文件搜索路径中。</li>
+<li><strong>作用域:</strong> <strong>目录级别</strong>。它修改的是 CMake 的一个内部属性，这个属性会被该 <code>CMakeLists.txt</code> 中定义的所有目标（以及后续子目录中的所有目标）继承。</li>
+<li><strong>影响:</strong> 在调用 <code>include_directories()</code> 之后定义的<strong>所有目标</strong>都会将这些目录添加到它们的 include 路径中。这有点像一个“全局”设置（在当前目录及子目录范围内）。</li>
+<li><strong>问题:</strong> 不够精确。如果你的 <code>CMakeLists.txt</code> 定义了多个目标（比如一个库 <code>libA</code> 和一个可执行文件 <code>appB</code>），而只有 <code>appB</code> 需要 <code>/path/to/special/headers</code>，使用 <code>include_directories(/path/to/special/headers)</code> 会导致 <code>libA</code> 的编译也去搜索这个路径，这是不必要的，有时甚至可能导致找到错误的头文件。</li>
+</ul>
+</li>
+<li><strong><code>target_include_directories(&lt;target&gt; [SYSTEM] [AFTER|BEFORE] &lt;INTERFACE|PUBLIC|PRIVATE&gt; [items1...] [&lt;INTERFACE|PUBLIC|PRIVATE&gt; [items2...] ...])</code></strong><ul>
+<li><strong>作用:</strong> 将指定的目录 (<code>items1</code>, <code>items2</code> 等) 添加到<strong>特定目标 <code>&lt;target&gt;</code></strong> 的头文件搜索路径中。</li>
+<li><strong>作用域:</strong> <strong>目标级别</strong>。它只影响你明确指定的那个目标。</li>
+<li><strong>影响:</strong> 只有 <code>&lt;target&gt;</code> 会使用这些 include 路径。</li>
+<li><strong>关键修饰符 (<code>INTERFACE</code>, <code>PUBLIC</code>, <code>PRIVATE</code>):</strong><ul>
+<li><code>PRIVATE</code>: 目录只用于编译 <code>&lt;target&gt;</code> 自身。依赖 <code>&lt;target&gt;</code> 的其他目标<strong>不会</strong>继承这些目录。</li>
+<li><code>PUBLIC</code>: 目录既用于编译 <code>&lt;target&gt;</code> 自身，<strong>也</strong>会传递给依赖 <code>&lt;target&gt;</code> 的其他目标。</li>
+<li><code>INTERFACE</code>: 目录<strong>不</strong>用于编译 <code>&lt;target&gt;</code> 自身，但<strong>会</strong>传递给依赖 <code>&lt;target&gt;</code> 的其他目标。（常用于接口库或头文件库）。</li>
+</ul>
+</li>
+<li><strong>优点:</strong> 非常精确和清晰。你可以为每个目标精确指定它需要的头文件路径，不会污染其他目标的编译环境。这是现代 CMake 的推荐做法。</li>
+</ul>
+</li>
+</ol>
+<p><strong>总结区别:</strong></p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>include_directories()</code></th>
+<th><code>target_include_directories()</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>作用域</strong></td>
+<td>目录级别 (影响当前及子目录所有后续目标)</td>
+<td>目标级别 (只影响指定目标)</td>
+</tr>
+<tr>
+<td><strong>精确性</strong></td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td><strong>封装性</strong></td>
+<td>差 (设置是“全局”的)</td>
+<td>好 (设置附加到具体目标)</td>
+</tr>
+<tr>
+<td><strong>现代推荐</strong></td>
+<td><strong>否</strong> (除非有特定全局需求，但应避免)</td>
+<td><strong>是</strong> (现代 CMake 的核心用法)</td>
+</tr>
+<tr>
+<td><strong>依赖传递</strong></td>
+<td>不直接处理</td>
+<td>通过 <code>PUBLIC</code>&#x2F;<code>INTERFACE</code> 关键字明确控制</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong>CMake 旧方式 vs 新方式 (现代 CMake)</strong></p>
+<p>这个区别的核心在于从<strong>基于变量和全局&#x2F;目录设置</strong>转向<strong>基于目标及其属性</strong>。</p>
+<p><strong>旧方式 (Variable-Centric, Directory-Scoped - 大约 CMake 2.x 时代)</strong></p>
+<ul>
+<li><p><strong>核心思想:</strong> <code>find_package</code> 等命令运行后设置一堆<strong>全局变量</strong>，你在 <code>CMakeLists.txt</code> 中手动使用这些变量来配置目标。配置的作用域往往是整个目录。</p>
+</li>
+<li><p><strong>典型流程:</strong></p>
+<ol>
+<li><p><code>find_package(SomeLib REQUIRED)</code></p>
+<ul>
+<li>执行 <code>FindSomeLib.cmake</code> 或旧式的 <code>SomeLibConfig.cmake</code>。</li>
+<li>设置变量，如：<ul>
+<li><code>SomeLib_FOUND</code> (布尔值)</li>
+<li><code>SomeLib_INCLUDE_DIRS</code> (包含目录列表)</li>
+<li><code>SomeLib_LIBRARIES</code> (库文件列表或链接器标志)</li>
+<li><code>SomeLib_DEFINITIONS</code> (编译定义)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>手动应用这些变量到你的目标：</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># (可能在 find_package 之前或之后调用)</span><br><span class="line">include_directories($&#123;SomeLib_INCLUDE_DIRS&#125;) # 应用到后续所有目标</span><br><span class="line">add_definitions($&#123;SomeLib_DEFINITIONS&#125;)     # 应用到后续所有目标</span><br><span class="line"></span><br><span class="line">add_executable(my_app main.cpp)</span><br><span class="line"># 手动链接库</span><br><span class="line">target_link_libraries(my_app PRIVATE $&#123;SomeLib_LIBRARIES&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><p><strong>特点与问题:</strong></p>
+<ul>
+<li><strong>全局状态:</strong> 变量和设置（如 <code>include_directories</code>）通常影响整个目录或项目，难以管理，容易冲突。</li>
+<li><strong>手动管理:</strong> 你需要知道每个库设置了哪些变量，并手动将它们应用到目标的各个属性（include, link, definitions）。</li>
+<li><strong>传递依赖困难:</strong> 如果 <code>my_app</code> 依赖 <code>my_lib</code>，而 <code>my_lib</code> 依赖 <code>SomeLib</code>。在使用旧方式时，<code>my_app</code> 的 <code>CMakeLists.txt</code> 可能也需要知道 <code>SomeLib</code> 的包含目录或定义（如果 <code>my_lib</code> 的头文件暴露了 <code>SomeLib</code> 的类型），这破坏了封装性。你需要手动传递这些信息。</li>
+<li><strong>不够清晰:</strong> <code>target_link_libraries(my_app $&#123;SomeLib_LIBRARIES&#125;)</code> 没有明确说明链接的是什么，只是一串变量。</li>
+</ul>
+</li>
+</ul>
+<p><strong>新方式 (Modern CMake &#x2F; Target-Centric - 大约 CMake 3.0+ 时代)</strong></p>
+<ul>
+<li><p><strong>核心思想:</strong> 将构建所需的所有信息（包含路径、库文件、编译选项、依赖关系等）<strong>附加到目标（Target）上</strong>。<code>find_package</code> 优先查找能定义<strong>导入目标 (Imported Targets)</strong> 的配置文件。</p>
+</li>
+<li><p><strong>典型流程:</strong></p>
+<ol>
+<li><p><code>find_package(SomeLib REQUIRED)</code></p>
+<ul>
+<li>执行现代的 <code>SomeLibConfig.cmake</code>。</li>
+<li>这个脚本的核心任务是定义一个或多个<strong>导入目标</strong>，例如 <code>SomeLib::Core</code> 或 <code>SomeLib::SomeLib</code>。</li>
+<li><strong>导入目标</strong>像一个对象，它<strong>封装</strong>了使用该库（或库的某个部分）所需的所有信息：<ul>
+<li>它需要链接的库文件位置。</li>
+<li>它需要使用的包含目录 (<code>INTERFACE_INCLUDE_DIRECTORIES</code> 属性)。</li>
+<li>它需要使用的编译定义 (<code>INTERFACE_COMPILE_DEFINITIONS</code> 属性)。</li>
+<li>它自己依赖的其他目标 (<code>INTERFACE_LINK_LIBRARIES</code> 属性，实现<strong>传递依赖</strong>)。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>直接将导入目标链接到你的目标：</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">add_executable(my_app main.cpp)</span><br><span class="line"></span><br><span class="line"># 只需链接目标，CMake 会自动处理其他所有事情</span><br><span class="line">target_link_libraries(my_app PRIVATE SomeLib::Core) # 假设 SomeLib 提供了一个叫 Core 的组件/目标</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><p><strong>特点与优势:</strong></p>
+<ul>
+<li><strong>目标即一切:</strong> 所有配置都围绕目标进行。<code>target_include_directories</code>, <code>target_compile_definitions</code>, <code>target_link_libraries</code> 都操作在目标上。</li>
+<li><strong>封装性:</strong> 库的使用细节被封装在导入目标中。你的 <code>CMakeLists.txt</code> 只需要知道目标的名字 (<code>SomeLib::Core</code>)。</li>
+<li><strong>自动传递依赖:</strong> 当你链接 <code>SomeLib::Core</code> 时，如果 <code>SomeLib::Core</code> 的定义中包含了 <code>INTERFACE</code> 或 <code>PUBLIC</code> 的包含目录、编译定义或链接库，这些信息会自动传递给 <code>my_app</code>。例如，如果 <code>SomeLib::Core</code> 内部链接了 <code>Threads::Threads</code> (另一个导入目标)，<code>my_app</code> 在链接时也会自动考虑 <code>Threads</code>。这就是 <code>target_link_libraries</code> 的强大之处。</li>
+<li><strong>清晰明确:</strong> <code>target_link_libraries(my_app PRIVATE SomeLib::Core)</code> 非常清楚地表明 <code>my_app</code> 直接依赖 <code>SomeLib</code> 的 <code>Core</code> 部分。</li>
+<li><strong>精确控制:</strong> 使用 <code>PRIVATE</code>, <code>PUBLIC</code>, <code>INTERFACE</code> 关键字可以精确控制依赖信息的传递范围。</li>
+</ul>
+</li>
+</ul>
+<p><strong>总结新旧对比:</strong></p>
+<table>
+<thead>
+<tr>
+<th>方面</th>
+<th>旧方式 (Variable-Centric)</th>
+<th>新方式 (Target-Centric)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>核心</strong></td>
+<td>全局&#x2F;目录变量 (<code>_DIRS</code>, <code>_LIBS</code>)</td>
+<td>目标及其属性 (<code>target_*</code> 命令, 导入目标)</td>
+</tr>
+<tr>
+<td><strong><code>find_package</code></strong></td>
+<td>主要设置变量</td>
+<td>主要定义导入目标 (<code>Namespace::Target</code>)</td>
+</tr>
+<tr>
+<td><strong>配置方式</strong></td>
+<td>手动应用变量到目标</td>
+<td>将导入目标链接到目标，CMake自动处理细节</td>
+</tr>
+<tr>
+<td><strong>包含路径</strong></td>
+<td><code>include_directories()</code> (全局)</td>
+<td><code>target_include_directories()</code> (目标级, <code>PUBLIC</code>&#x2F;<code>PRIVATE</code>)</td>
+</tr>
+<tr>
+<td><strong>链接</strong></td>
+<td><code>target_link_libraries(... $&#123;..._LIBS&#125;)</code></td>
+<td><code>target_link_libraries(... Namespace::Target)</code></td>
+</tr>
+<tr>
+<td><strong>依赖传递</strong></td>
+<td>手动处理，易出错</td>
+<td>自动处理 (通过 <code>PUBLIC</code>&#x2F;<code>INTERFACE</code> 和链接导入目标)</td>
+</tr>
+<tr>
+<td><strong>封装性</strong></td>
+<td>差</td>
+<td>好</td>
+</tr>
+<tr>
+<td><strong>推荐度</strong></td>
+<td>不推荐</td>
+<td><strong>强烈推荐</strong></td>
+</tr>
+</tbody></table>
+</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/04/24/c4/" title="C++学习笔记—find原理—以opencv为例子的实操"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">C++学习笔记—find原理—以opencv为例子的实操</div></div><div class="info-2"><div class="info-item-1"> 更新 locate 数据库 (必做！)  操作: 打开终端，运行 sudo updatedb。 原因: 确保 locate 的数据库包含你刚刚安装的新库的文件信息。否则后续步骤可能什么也找不到。   初步定位：查找核心配置文件 (Config.cmake)  操作: 运行以下命令   123456789101112131415161718192021222324252627282930locate -i &#x27;config.cmake&#x27; | grep -i &#x27;opencv&#x27;# 结果为~ ❯ locate -i &#x27;config.cmake&#x27; | grep -i...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

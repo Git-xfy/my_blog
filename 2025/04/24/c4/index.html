@@ -1,0 +1,261 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>C++学习笔记—find原理—以opencv为例子的实操 | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="更新 locate 数据库 (必做！)  操作: 打开终端，运行 sudo updatedb。 原因: 确保 locate 的数据库包含你刚刚安装的新库的文件信息。否则后续步骤可能什么也找不到。   初步定位：查找核心配置文件 (Config.cmake)  操作: 运行以下命令   123456789101112131415161718192021222324252627282930locat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++学习笔记—find原理—以opencv为例子的实操">
+<meta property="og:url" content="https://feiyblog.netlify.app/2025/04/24/c4/index.html">
+<meta property="og:site_name" content="我的学习笔记">
+<meta property="og:description" content="更新 locate 数据库 (必做！)  操作: 打开终端，运行 sudo updatedb。 原因: 确保 locate 的数据库包含你刚刚安装的新库的文件信息。否则后续步骤可能什么也找不到。   初步定位：查找核心配置文件 (Config.cmake)  操作: 运行以下命令   123456789101112131415161718192021222324252627282930locat">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png">
+<meta property="article:published_time" content="2025-04-24T06:10:32.000Z">
+<meta property="article:modified_time" content="2025-04-24T10:51:23.760Z">
+<meta property="article:author" content="Xue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "C++学习笔记—find原理—以opencv为例子的实操",
+  "url": "https://feiyblog.netlify.app/2025/04/24/c4/",
+  "image": "https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png",
+  "datePublished": "2025-04-24T06:10:32.000Z",
+  "dateModified": "2025-04-24T10:51:23.760Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Xue",
+      "url": "https://feiyblog.netlify.app/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424131237614.png"><link rel="canonical" href="https://feiyblog.netlify.app/2025/04/24/c4/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'C++学习笔记—find原理—以opencv为例子的实操',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423091922134.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">C++学习笔记—find原理—以opencv为例子的实操</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">C++学习笔记—find原理—以opencv为例子的实操</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-24T06:10:32.000Z" title="发表于 2025-04-24 14:10:32">2025-04-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-24T10:51:23.760Z" title="更新于 2025-04-24 18:51:23">2025-04-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/C/">C++</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><ol>
+<li><p><strong>更新 <code>locate</code> 数据库 (必做！)</strong></p>
+<ul>
+<li><strong>操作:</strong> 打开终端，运行 <code>sudo updatedb</code>。</li>
+<li><strong>原因:</strong> 确保 <code>locate</code> 的数据库包含你刚刚安装的新库的文件信息。否则后续步骤可能什么也找不到。</li>
+</ul>
+</li>
+<li><p><strong>初步定位：查找核心配置文件 (<code>Config.cmake</code>)</strong></p>
+<ul>
+<li><p><strong>操作:</strong> 运行以下命令</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">locate -i <span class="string">&#x27;config.cmake&#x27;</span> | grep -i <span class="string">&#x27;opencv&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 结果为</span></span><br><span class="line">~ ❯ locate -i <span class="string">&#x27;config.cmake&#x27;</span> | grep -i <span class="string">&#x27;opencv&#x27;</span></span><br><span class="line">/home/xfy/opencv_versions/4.5.5/build/3rdparty/ade/ade-0.1.1f/sources/ade/cmake/adeConfig.cmake.in</span><br><span class="line">/home/xfy/opencv_versions/4.5.5/build/CPackConfig.cmake</span><br><span class="line">/home/xfy/opencv_versions/4.5.5/build/CPackSourceConfig.cmake</span><br><span class="line">/home/xfy/opencv_versions/4.5.5/build/OpenCVConfig.cmake</span><br><span class="line">/home/xfy/opencv_versions/4.5.5/build/opencv_python_config.cmake</span><br><span class="line">/home/xfy/opencv_versions/4.5.5/build/unix-install/OpenCVConfig.cmake</span><br><span class="line">/home/xfy/opencv_versions/4.5.5/opencv/cmake/OpenCVGenConfig.cmake</span><br><span class="line">/home/xfy/opencv_versions/4.5.5/opencv/cmake/OpenCVGenPkgconfig.cmake</span><br><span class="line">/home/xfy/opencv_versions/4.5.5/opencv/cmake/templates/OpenCVConfig.cmake.in</span><br><span class="line">/home/xfy/opencv_versions/4.5.5/opencv/samples/hal/c_hal/config.cmake</span><br><span class="line">/home/xfy/opencv_versions/4.5.5/opencv/samples/hal/slow_hal/config.cmake</span><br><span class="line">/usr/lib/x86_64-linux-gnu/cmake/opencv4/OpenCVConfig.cmake</span><br><span class="line">/usr/local/opencv/4.5.5/lib/cmake/opencv4/OpenCVConfig.cmake</span><br><span class="line">/var/lib/docker/overlay2/0809ea31aa8a06f4c911b20f04526b19005bfabdd262f23d6bb3a4ee464f4dbb/diff/home/myslam/3d/opencv-4.2.0/build/3rdparty/ade/ade-0.1.1f/sources/ade/cmake/adeConfig.cmake.in</span><br><span class="line">/var/lib/docker/overlay2/0809ea31aa8a06f4c911b20f04526b19005bfabdd262f23d6bb3a4ee464f4dbb/diff/home/myslam/3d/opencv-4.2.0/build/CPackConfig.cmake</span><br><span class="line">/var/lib/docker/overlay2/0809ea31aa8a06f4c911b20f04526b19005bfabdd262f23d6bb3a4ee464f4dbb/diff/home/myslam/3d/opencv-4.2.0/build/CPackSourceConfig.cmake</span><br><span class="line">/var/lib/docker/overlay2/0809ea31aa8a06f4c911b20f04526b19005bfabdd262f23d6bb3a4ee464f4dbb/diff/home/myslam/3d/opencv-4.2.0/build/OpenCVConfig.cmake</span><br><span class="line">/var/lib/docker/overlay2/0809ea31aa8a06f4c911b20f04526b19005bfabdd262f23d6bb3a4ee464f4dbb/diff/home/myslam/3d/opencv-4.2.0/build/opencv_python_config.cmake</span><br><span class="line">/var/lib/docker/overlay2/0809ea31aa8a06f4c911b20f04526b19005bfabdd262f23d6bb3a4ee464f4dbb/diff/home/myslam/3d/opencv-4.2.0/build/unix-install/OpenCVConfig.cmake</span><br><span class="line">/var/lib/docker/overlay2/0809ea31aa8a06f4c911b20f04526b19005bfabdd262f23d6bb3a4ee464f4dbb/diff/home/myslam/3d/opencv-4.2.0/cmake/OpenCVGenConfig.cmake</span><br><span class="line">/var/lib/docker/overlay2/0809ea31aa8a06f4c911b20f04526b19005bfabdd262f23d6bb3a4ee464f4dbb/diff/home/myslam/3d/opencv-4.2.0/cmake/OpenCVGenPkgconfig.cmake</span><br><span class="line">/var/lib/docker/overlay2/0809ea31aa8a06f4c911b20f04526b19005bfabdd262f23d6bb3a4ee464f4dbb/diff/home/myslam/3d/opencv-4.2.0/cmake/templates/OpenCVConfig.cmake.in</span><br><span class="line">/var/lib/docker/overlay2/0809ea31aa8a06f4c911b20f04526b19005bfabdd262f23d6bb3a4ee464f4dbb/diff/home/myslam/3d/opencv-4.2.0/samples/hal/c_hal/config.cmake</span><br><span class="line">/var/lib/docker/overlay2/0809ea31aa8a06f4c911b20f04526b19005bfabdd262f23d6bb3a4ee464f4dbb/diff/home/myslam/3d/opencv-4.2.0/samples/hal/slow_hal/config.cmake</span><br><span class="line">/var/lib/docker/overlay2/0809ea31aa8a06f4c911b20f04526b19005bfabdd262f23d6bb3a4ee464f4dbb/diff/usr/local/lib/cmake/opencv4/OpenCVConfig.cmake</span><br><span class="line">/var/lib/docker/overlay2/1f605c5b588ec93f0f1947a29092b374d5fd184eedbfea41eba42bc85f33b932/diff/usr/lib/x86_64-linux-gnu/cmake/opencv4/OpenCVConfig.cmake</span><br></pre></td></tr></table></figure>
+<p>  可以看到有很多，但是我知道我是安装到&#x2F;usr&#x2F;local&#x2F;的所以看&#x2F;usr&#x2F;local&#x2F;opencv&#x2F;4.5.5&#x2F;lib&#x2F;cmake&#x2F;opencv4&#x2F;OpenCVConfig.cmake<br>  这一个</p>
+</li>
+</ul>
+</li>
+<li><p><strong>确定 <code>find_package</code> 名称</strong></p>
+<p> 由OpenCVConfig.cmake可以知道这里的名称大小写是OpenCV，所以应该是find_package(OpenCV REQUIRED)</p>
+<p> 这里可以指定模块，也可以不指定，没有太大影响的。之前文章的例子里指定了模块的写法是find_package(OpenCV REQUIRED COMPONENTS core imgcodecs highgui)</p>
+</li>
+<li><p><strong>然后通过gedit或者vim等等查看这个文件</strong></p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#  The OpenCV CMake configuration file</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#             ** File generated automatically, do not modify **</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#  Usage from an external project:</span></span><br><span class="line"><span class="comment">#    In your CMakeLists.txt, add these lines:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    find_package(OpenCV REQUIRED)</span></span><br><span class="line"><span class="comment">#    include_directories($&#123;OpenCV_INCLUDE_DIRS&#125;) # Not needed for CMake &gt;= 2.8.11</span></span><br><span class="line"><span class="comment">#    target_link_libraries(MY_TARGET_NAME $&#123;OpenCV_LIBS&#125;)</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    Or you can search for specific OpenCV modules:</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    find_package(OpenCV REQUIRED core videoio)</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    You can also mark OpenCV components as optional:</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#    find_package(OpenCV REQUIRED core OPTIONAL_COMPONENTS viz)</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    If the module is found then OPENCV_&lt;MODULE&gt;_FOUND is set to TRUE.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    This file will define the following variables:</span></span><br><span class="line"><span class="comment">#      - OpenCV_LIBS                     : The list of all imported targets for OpenCV modules.</span></span><br><span class="line"><span class="comment">#      - OpenCV_INCLUDE_DIRS             : The OpenCV include directories.</span></span><br><span class="line"><span class="comment">#      - OpenCV_COMPUTE_CAPABILITIES     : The version of compute capability.</span></span><br><span class="line"><span class="comment">#      - OpenCV_ANDROID_NATIVE_API_LEVEL : Minimum required level of Android API.</span></span><br><span class="line"><span class="comment">#      - OpenCV_VERSION                  : The version of this OpenCV build: &quot;4.5.5&quot;</span></span><br><span class="line"><span class="comment">#      - OpenCV_VERSION_MAJOR            : Major version part of OpenCV_VERSION: &quot;4&quot;</span></span><br><span class="line"><span class="comment">#      - OpenCV_VERSION_MINOR            : Minor version part of OpenCV_VERSION: &quot;5&quot;</span></span><br><span class="line"><span class="comment">#      - OpenCV_VERSION_PATCH            : Patch version part of OpenCV_VERSION: &quot;5&quot;</span></span><br><span class="line"><span class="comment">#      - OpenCV_VERSION_STATUS           : Development status of this build: &quot;&quot;</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    Advanced variables:</span></span><br><span class="line"><span class="comment">#      - OpenCV_SHARED                   : Use OpenCV as shared library</span></span><br><span class="line"><span class="comment">#      - OpenCV_INSTALL_PATH             : OpenCV location</span></span><br><span class="line"><span class="comment">#      - OpenCV_LIB_COMPONENTS           : Present OpenCV modules list</span></span><br><span class="line"><span class="comment">#      - OpenCV_USE_MANGLED_PATHS        : Mangled OpenCV path flag</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    Deprecated variables:</span></span><br><span class="line"><span class="comment">#      - OpenCV_VERSION_TWEAK            : Always &quot;0&quot;</span></span><br></pre></td></tr></table></figure>
+<p> 翻译一下</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ===================================================================================</span></span><br><span class="line"><span class="comment">#  OpenCV CMake 配置文件</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#             ** 文件自动生成，请勿修改 **</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#  从外部项目使用：</span></span><br><span class="line"><span class="comment">#    在你的 CMakeLists.txt 中，添加这些行：</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    find_package(OpenCV REQUIRED)</span></span><br><span class="line"><span class="comment">#    include_directories($&#123;OpenCV_INCLUDE_DIRS&#125;) # 对于 CMake &gt;= 2.8.11 已不再需要</span></span><br><span class="line"><span class="comment">#    target_link_libraries(MY_TARGET_NAME $&#123;OpenCV_LIBS&#125;)</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    或者你可以搜索特定的 OpenCV 模块：</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    find_package(OpenCV REQUIRED core videoio)</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    你也可以将 OpenCV 组件标记为可选：</span></span><br><span class="line"><span class="comment">#    find_package(OpenCV REQUIRED core OPTIONAL_COMPONENTS viz)</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    如果找到了模块，那么 OPENCV_&lt;MODULE&gt;_FOUND 会被设置为 TRUE。</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    该文件将定义以下变量：</span></span><br><span class="line"><span class="comment">#      - OpenCV_LIBS                     : OpenCV 模块的所有导入目标 (imported targets) 的列表。</span></span><br><span class="line"><span class="comment">#      - OpenCV_INCLUDE_DIRS             : OpenCV 的包含目录。</span></span><br><span class="line"><span class="comment">#      - OpenCV_COMPUTE_CAPABILITIES     : 计算能力 (Compute Capability) 的版本。</span></span><br><span class="line"><span class="comment">#      - OpenCV_ANDROID_NATIVE_API_LEVEL : 最低要求的 Android API 级别。</span></span><br><span class="line"><span class="comment">#      - OpenCV_VERSION                  : 此 OpenCV 构建的版本：&quot;4.5.5&quot;</span></span><br><span class="line"><span class="comment">#      - OpenCV_VERSION_MAJOR            : OpenCV_VERSION 的主版本号：&quot;4&quot;</span></span><br><span class="line"><span class="comment">#      - OpenCV_VERSION_MINOR            : OpenCV_VERSION 的次版本号：&quot;5&quot;</span></span><br><span class="line"><span class="comment">#      - OpenCV_VERSION_PATCH            : OpenCV_VERSION 的修订版本号：&quot;5&quot;</span></span><br><span class="line"><span class="comment">#      - OpenCV_VERSION_STATUS           : 此构建的开发状态：&quot;&quot;</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    高级变量：</span></span><br><span class="line"><span class="comment">#      - OpenCV_SHARED                   : 将 OpenCV 作为共享库使用</span></span><br><span class="line"><span class="comment">#      - OpenCV_INSTALL_PATH             : OpenCV 的位置</span></span><br><span class="line"><span class="comment">#      - OpenCV_LIB_COMPONENTS           : 当前存在的 OpenCV 模块列表</span></span><br><span class="line"><span class="comment">#      - OpenCV_USE_MANGLED_PATHS        : Mangled OpenCV 路径标志</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    已弃用变量：</span></span><br><span class="line"><span class="comment">#      - OpenCV_VERSION_TWEAK            : 始终为 &quot;0&quot;</span></span><br></pre></td></tr></table></figure>
+<p> 可以看到这里说明了执行findpackage之后给哪些变量赋予了哪些值，也写了用法</p>
+ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#  从外部项目使用：</span></span><br><span class="line"><span class="comment">#    在你的 CMakeLists.txt 中，添加这些行：</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment">#    find_package(OpenCV REQUIRED)</span></span><br><span class="line"><span class="comment">#    include_directories($&#123;OpenCV_INCLUDE_DIRS&#125;) # 对于 CMake &gt;= 2.8.11 已不再需要</span></span><br><span class="line"><span class="comment">#    target_link_libraries(MY_TARGET_NAME $&#123;OpenCV_LIBS&#125;)</span></span><br></pre></td></tr></table></figure>
+<p> 这段注释虽然目的是指导用户，但它本身混合了新旧两种风格的痕迹，我们需要仔细解读：</p>
+<ol>
+<li><strong>旧方式 (Variable-Based) 的体现：</strong><ul>
+<li><p><strong>明确的指令:</strong> 注释中明确给出了以下使用步骤：</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">include_directories($&#123;OpenCV_INCLUDE_DIRS&#125;)</span><br><span class="line">target_link_libraries(MY_TARGET_NAME $&#123;OpenCV_LIBS&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>这是典型的旧式 CMake 用法。它依赖于 <code>find_package</code> 执行后设置的两个<strong>变量</strong>：</p>
+<ul>
+<li><code>$&#123;OpenCV_INCLUDE_DIRS&#125;</code>: 包含了需要添加到编译器搜索路径的头文件目录。你需要手动调用 <code>include_directories()</code> (或现代的 <code>target_include_directories()</code>) 来使用它。</li>
+<li><code>$&#123;OpenCV_LIBS&#125;</code>: 包含了需要链接的库文件列表（可能是库文件的绝对路径，也可能在旧 CMake 中是链接器标志）。你需要手动将这个变量传递给 <code>target_link_libraries()</code>。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>新方式 (Target-Based) 的线索和提示：</strong><ul>
+<li><p><strong>关键注释:</strong> <code>include_directories($&#123;OpenCV_INCLUDE_DIRS&#125;) # Not needed for CMake &gt;= 2.8.11</code></p>
+<ul>
+<li>这是<strong>最强烈的暗示</strong>。它告诉你，对于较新版本的 CMake (2.8.11 及以后，实际上现代 CMake 实践通常指 3.x 系列)，手动添加 <code>OpenCV_INCLUDE_DIRS</code> 是<strong>不必要</strong>的。为什么？因为现代 CMake 的核心是<strong>目标 (Target)</strong>。当你链接到一个设计良好的<strong>导入目标 (Imported Target)</strong> 时，这个目标本身就封装了它所需的包含目录、链接库、编译定义等信息。CMake 会自动将这些信息传递给链接它的目标。</li>
+</ul>
+</li>
+<li><p><strong>变量 <code>OpenCV_LIBS</code> 的描述:</strong> <code>OpenCV_LIBS : The list of all **imported targets** for OpenCV modules.</code></p>
+<ul>
+<li>这一点非常重要！虽然旧方式的使用示例中是 <code>target_link_libraries(... $&#123;OpenCV_LIBS&#125;)</code>，但这里对 <code>OpenCV_LIBS</code> 变量内容的描述明确指出了它包含的是 <strong>“imported targets”</strong>。这意味着 <code>$&#123;OpenCV_LIBS&#125;</code> 变量里存放的不再仅仅是库文件名或路径，而是 CMake 能理解的、代表了 OpenCV 各个模块的<strong>目标名称</strong>列表（例如 <code>OpenCV::core</code>, <code>OpenCV::imgproc</code> 等）。</li>
+</ul>
+</li>
+<li><p>结合以上两点，可以推断出新方式的用法（尽管这段注释没有直接写出来）</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">find_package(OpenCV REQUIRED COMPONENTS core imgproc highgui) # 假设需要这三个</span><br><span class="line">target_link_libraries(MY_TARGET_NAME PRIVATE OpenCV::core OpenCV::imgproc OpenCV::highgui)</span><br><span class="line"></span><br><span class="line">这里find_package可以不指定具体哪个模块而是用</span><br><span class="line">find_package(OpenCV REQUIRED)</span><br><span class="line">区别不大</span><br><span class="line"></span><br><span class="line">target_link_libraries推荐指定模块，不然就会把所有模块全都链接到项目上</span><br><span class="line"></span><br><span class="line">说是这样说，但是我指定模块运行失败，不知道是因为名字不对还是啥</span><br><span class="line">target_include_directories(my_app PUBLIC include)才成功的</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="总结：还是用文档里说的吧"><a href="#总结：还是用文档里说的吧" class="headerlink" title="总结：还是用文档里说的吧"></a>总结：还是用文档里说的吧</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#  从外部项目使用：</span></span><br><span class="line"><span class="comment">#    在你的 CMakeLists.txt 中，添加这些行：</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line">find_package(OpenCV REQUIRED)</span><br><span class="line">include_directories(<span class="variable">$&#123;OpenCV_INCLUDE_DIRS&#125;</span>) <span class="comment"># 对于 CMake &gt;= 2.8.11 已不再需要</span></span><br><span class="line">target_link_libraries(MY_TARGET_NAME <span class="variable">$&#123;OpenCV_LIBS&#125;</span>)</span><br><span class="line"></span><br><span class="line">其中include_directories可有可无</span><br></pre></td></tr></table></figure></article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/04/24/c3/" title="C++学习笔记—find原理"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">C++学习笔记—find原理</div></div><div class="info-2"><div class="info-item-1">目标： 在安装新库后，找出在 CMake 中 find_package 所需的精确包名（包括大小写），并了解如何链接该库（优先使用现代 CMake 目标）。 操作步骤总结：  更新 locate 数据库 (必做！) 操作: 打开终端，运行 sudo updatedb。 原因: 确保 locate 的数据库包含你刚刚安装的新库的文件信息。否则后续步骤可能什么也找不到。   初步定位：查找核心配置文件 (Config.cmake) 操作: 运行以下命令（将 库名关键词 替换为你猜测的库名，例如 opencv, ceres, sophus 等，通常用小写）：   12locate -i &#x27;config.cmake&#x27; | grep -i &#x27;库名关键词&#x27;  目的: 这个命令专门查找包含 config.cmake（不区分大小写）并且路径中包含你指定的库名关键词的文件。这通常能最快地帮你找到那个最关键的入口配置文件。  分析结果: 留意输出中的文件路径，比如...</div></div></div></a><a class="pagination-related" href="/2025/04/24/c5/" title="C++学习笔记—cmake的新旧方法"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">C++学习笔记—cmake的新旧方法</div></div><div class="info-2"><div class="info-item-1">我们来详细拆解 include_directories() 和 target_include_directories() 的区别，并再次深入探讨 CMake 的旧方式与新方式（现代 CMake）。 include_directories() vs target_include_directories() 这两者的核心区别在于作用域 (Scope)：  include_directories([AFTER|BEFORE] [SYSTEM] dir1 [dir2 ...]) 作用: 将指定的目录 (dir1, dir2 等) 添加到当前 CMakeLists.txt 文件以及所有在它之后处理的子目录的头文件搜索路径中。 作用域: 目录级别。它修改的是 CMake 的一个内部属性，这个属性会被该 CMakeLists.txt 中定义的所有目标（以及后续子目录中的所有目标）继承。 影响: 在调用 include_directories() 之后定义的所有目标都会将这些目录添加到它们的 include 路径中。这有点像一个“全局”设置（在当前目录及子目录范围内）。 问题:...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A%E8%BF%98%E6%98%AF%E7%94%A8%E6%96%87%E6%A1%A3%E9%87%8C%E8%AF%B4%E7%9A%84%E5%90%A7"><span class="toc-text">总结：还是用文档里说的吧</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
