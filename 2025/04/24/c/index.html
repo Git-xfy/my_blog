@@ -1,0 +1,254 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>C++ | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="C++学习笔记—基础篇1. 安装最基础的编译环境1sudo apt install build-essential  验证有没有装好，输出版本信息即装好了 12g++ --versionmake --version  2. 第一个程序使用任意的编辑器编写一个hello.cpp然后编译 1g++ hello.cpp -o hello   g++: 调用 GNU C++ 编译器。 hello.cpp:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++">
+<meta property="og:url" content="https://feiyblog.netlify.app/2025/04/24/c/index.html">
+<meta property="og:site_name" content="我的学习笔记">
+<meta property="og:description" content="C++学习笔记—基础篇1. 安装最基础的编译环境1sudo apt install build-essential  验证有没有装好，输出版本信息即装好了 12g++ --versionmake --version  2. 第一个程序使用任意的编辑器编写一个hello.cpp然后编译 1g++ hello.cpp -o hello   g++: 调用 GNU C++ 编译器。 hello.cpp:">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png">
+<meta property="article:published_time" content="2025-04-24T04:58:47.000Z">
+<meta property="article:modified_time" content="2025-04-24T06:02:58.362Z">
+<meta property="article:author" content="Xue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "C++",
+  "url": "https://feiyblog.netlify.app/2025/04/24/c/",
+  "image": "https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png",
+  "datePublished": "2025-04-24T04:58:47.000Z",
+  "dateModified": "2025-04-24T06:02:58.362Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Xue",
+      "url": "https://feiyblog.netlify.app/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424131237614.png"><link rel="canonical" href="https://feiyblog.netlify.app/2025/04/24/c/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'C++',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423091922134.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">C++</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">C++</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-24T04:58:47.000Z" title="发表于 2025-04-24 12:58:47">2025-04-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-24T06:02:58.362Z" title="更新于 2025-04-24 14:02:58">2025-04-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/C/">C++</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="C-学习笔记—基础篇"><a href="#C-学习笔记—基础篇" class="headerlink" title="C++学习笔记—基础篇"></a>C++学习笔记—基础篇</h1><h2 id="1-安装最基础的编译环境"><a href="#1-安装最基础的编译环境" class="headerlink" title="1. 安装最基础的编译环境"></a>1. 安装最基础的编译环境</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install build-essential</span><br></pre></td></tr></table></figure>
+
+<p>验证有没有装好，输出版本信息即装好了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">g++ --version</span><br><span class="line">make --version</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-第一个程序"><a href="#2-第一个程序" class="headerlink" title="2. 第一个程序"></a>2. 第一个程序</h2><p>使用任意的编辑器编写一个hello.cpp然后编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ hello.cpp -o hello</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>g++</code>: 调用 GNU C++ 编译器。</li>
+<li><code>hello.cpp</code>: 你要编译的源文件。</li>
+<li><code>o hello</code>: 这个选项告诉编译器，将生成的可执行文件命名为 <code>hello</code>。如果没有 <code>o</code> 选项，默认会生成一个名为 <code>a.out</code> 的文件。</li>
+</ul>
+<h2 id="3-使用-make-简化编译"><a href="#3-使用-make-简化编译" class="headerlink" title="3. 使用 make 简化编译"></a>3. <strong>使用 <code>make</code> 简化编译</strong></h2><p>如果项目比较复杂的话，只通过命令编译就会很长</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ main.cpp math_utils.cpp -o my_calc -Wall -Wextra -std=c++11</span><br></pre></td></tr></table></figure>
+
+<p><code>make</code> 通过 <code>Makefile</code> 文件来解决手动编译的许多问题</p>
+<p>创建一个 <code>Makefile</code> 文件然后通过 <code>make</code> 命令就可以自动的编译（过程省略）但是 <code>Makefile</code> 文件不是很好写</p>
+<h2 id="4-使用-CMake"><a href="#4-使用-CMake" class="headerlink" title="4. 使用 CMake"></a>4. <strong>使用 <code>CMake</code></strong></h2><p><code>CMake</code> 作为构建系统生成器，解决了 <code>make</code> 的许多局限性，尤其是在跨平台和管理复杂性方面。</p>
+<ol>
+<li><p><strong>创建 <code>CMakeLists.txt</code>:</strong> 在 <code>calculator</code> 目录下创建 <code>CMakeLists.txt</code> 文件</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># CMake 最低版本要求</span><br><span class="line">cmake_minimum_required(VERSION 3.10)</span><br><span class="line"></span><br><span class="line"># 项目名称和语言</span><br><span class="line">project(Calculator LANGUAGES CXX)</span><br><span class="line"></span><br><span class="line"># 设置 C++ 标准</span><br><span class="line">set(CMAKE_CXX_STANDARD 11)</span><br><span class="line">set(CMAKE_CXX_STANDARD_REQUIRED True)</span><br><span class="line"></span><br><span class="line"># (可选) 添加编译选项，会传递给编译器</span><br><span class="line"># add_compile_options(-Wall -Wextra) # 或者更现代的方式如下：</span><br><span class="line">target_compile_options(my_calc INTERFACE -Wall -Wextra) # 应用于 my_calc 及其使用者</span><br><span class="line"></span><br><span class="line"># 添加可执行文件目标</span><br><span class="line"># CMake 会自动分析 main.cpp 和 math_utils.cpp 之间的依赖</span><br><span class="line"># 以及它们对 math_utils.h 的依赖</span><br><span class="line">add_executable(my_calc main.cpp math_utils.cpp)</span><br><span class="line"></span><br><span class="line"># 如果头文件在 include 目录:</span><br><span class="line"># target_include_directories(my_calc PRIVATE $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/include)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>操作 (Out-of-Source Build):</strong></p>
+<ul>
+<li><p><strong>创建构建目录并进入:</strong></p>
+<p>  bash</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> build</span><br><span class="line"><span class="built_in">cd</span> build</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>**运行 CMake (配置阶段):**CMake 会读取 <code>../CMakeLists.txt</code>，检测你的编译器，并生成一个 <code>Makefile</code> (或其他本地构建系统文件) 在 <code>build</code> 目录中。它会自动处理 <code>main.cpp</code> 对 <code>math_utils.h</code> 的依赖。</p>
+<p>  bash</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake ..</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>运行构建工具 (构建阶段):</strong><code>make</code> 会使用 CMake 生成的 <code>Makefile</code> 来编译项目。可执行文件 <code>my_calc</code> 会出现在 <code>build</code> 目录。</p>
+<p>  bash</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>运行:</strong></p>
+<p>  bash</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./my_calc</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>清理:</strong></p>
+<ul>
+<li>可以使用 <code>make clean</code> (由 CMake 生成的 <code>Makefile</code> 提供)。</li>
+<li>或者更彻底地，删除整个 <code>build</code> 目录：<code>cd .. &amp;&amp; rm -rf build</code>。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424132754089.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/04/22/git%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/" title="git学习记录"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423124935403.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">git学习记录</div></div><div class="info-2"><div class="info-item-1">Git学习笔记 1. 安装在官方网站安装: https://git-scm.com/  2. 初始化配置123456789101112# 配置全局用户名和邮箱git config --global user.name &quot;name&quot;git config --global user.email xxxx@gmail.com# 凭证存储# 第一次通过 HTTPS 方式 push 或 pull 时，Git 会要求输入用户名和密码# （或 Personal Access Token）。操作成功后，&quot;store&quot; 会把凭证以明文格式写入文件# 以后再访问同一个远程仓库时，Git 会自动读取凭证，不再重复询问git config --global credential.helper store# 配置默认分支，现在推荐使用maingit config --global init.defaultBranch main   3. 创建一个新仓库12345# 1. 初始化本地仓库git init# 2. 克隆远程仓库git clone...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E5%9F%BA%E7%A1%80%E7%AF%87"><span class="toc-text">C++学习笔记—基础篇</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85%E6%9C%80%E5%9F%BA%E7%A1%80%E7%9A%84%E7%BC%96%E8%AF%91%E7%8E%AF%E5%A2%83"><span class="toc-text">1. 安装最基础的编译环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%A8%8B%E5%BA%8F"><span class="toc-text">2. 第一个程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%BD%BF%E7%94%A8-make-%E7%AE%80%E5%8C%96%E7%BC%96%E8%AF%91"><span class="toc-text">3. 使用 make 简化编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E4%BD%BF%E7%94%A8-CMake"><span class="toc-text">4. 使用 CMake</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
