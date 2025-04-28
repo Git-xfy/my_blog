@@ -1,0 +1,493 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>C++学习笔记—g2o库—ICP | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="这个例子解决的是一个常见的 3D 重建或配准问题：我们有两组对应的三维点云（或者说，已知点之间的匹配关系），并且已经有了一个初始的、可能不太精确的相对位姿估计（旋转 R 和平移 t），我们希望通过优化来获得一个更精确的相对位姿。 与 Bundle Adjustment 的关键区别：  BA 通常处理的是 3D 点到 2D 图像点的投影关系。 这个例子处理的是 3D 点到 3D 点 的直接变换关系。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++学习笔记—g2o库—ICP">
+<meta property="og:url" content="https://feiyblog.netlify.app/2025/04/29/c10/index.html">
+<meta property="og:site_name" content="我的学习笔记">
+<meta property="og:description" content="这个例子解决的是一个常见的 3D 重建或配准问题：我们有两组对应的三维点云（或者说，已知点之间的匹配关系），并且已经有了一个初始的、可能不太精确的相对位姿估计（旋转 R 和平移 t），我们希望通过优化来获得一个更精确的相对位姿。 与 Bundle Adjustment 的关键区别：  BA 通常处理的是 3D 点到 2D 图像点的投影关系。 这个例子处理的是 3D 点到 3D 点 的直接变换关系。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424185551027.png">
+<meta property="article:published_time" content="2025-04-28T16:09:19.000Z">
+<meta property="article:modified_time" content="2025-04-28T16:44:07.824Z">
+<meta property="article:author" content="Xue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424185551027.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "C++学习笔记—g2o库—ICP",
+  "url": "https://feiyblog.netlify.app/2025/04/29/c10/",
+  "image": "https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424185551027.png",
+  "datePublished": "2025-04-28T16:09:19.000Z",
+  "dateModified": "2025-04-28T16:44:07.824Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Xue",
+      "url": "https://feiyblog.netlify.app/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424131237614.png"><link rel="canonical" href="https://feiyblog.netlify.app/2025/04/29/c10/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?568315545f51aa0aac415d8a71f8bd8f";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'C++学习笔记—g2o库—ICP',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424185551027.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">C++学习笔记—g2o库—ICP</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">C++学习笔记—g2o库—ICP</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-28T16:09:19.000Z" title="发表于 2025-04-29 00:09:19">2025-04-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-28T16:44:07.824Z" title="更新于 2025-04-29 00:44:07">2025-04-29</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>这个例子解决的是一个常见的 3D 重建或配准问题：我们有两组对应的三维点云（或者说，已知点之间的匹配关系），并且已经有了一个初始的、可能不太精确的相对位姿估计（旋转 R 和平移 t），我们希望通过优化来获得一个更精确的相对位姿。</p>
+<p><strong>与 Bundle Adjustment 的关键区别：</strong></p>
+<ul>
+<li>BA 通常处理的是 3D 点到 2D 图像点的投影关系。</li>
+<li>这个例子处理的是 <strong>3D 点到 3D 点</strong> 的直接变换关系。</li>
+<li>这个特定的例子<strong>只优化位姿</strong>，而<strong>不优化三维点的坐标</strong> (尽管也可以扩展为同时优化点坐标)。</li>
+</ul>
+<h3 id="1-问题描述"><a href="#1-问题描述" class="headerlink" title="1. 问题描述"></a>1. 问题描述</h3><p>假设我们有两组三维点：</p>
+<ul>
+<li><code>pts1</code>: 第一组三维点的坐标（在坐标系 1 中）。</li>
+<li><code>pts2</code>: 第二组三维点的坐标（在坐标系 2 中）。</li>
+</ul>
+<p>我们知道 <code>pts1[i]</code> 和 <code>pts2[i]</code> 是<strong>对应</strong>的点。我们还有一个从坐标系 2 变换到坐标系 1 的初始位姿估计 $T_{12} &#x3D; (R, t)$。</p>
+<p>目标是：<strong>优化位姿 $T_{12}$</strong>，使得将 <code>pts2</code> 中的每个点 $\mathbf{p}_{2,i}$ 通过优化后的位姿 $T_{12}$ 变换到坐标系 1 后，得到的结果 $T_{12} \mathbf{p}_{2,i}$ 与其对应的点 $\mathbf{p}_{1,i}$ 之间的<strong>距离（误差）</strong> 的总和最小。</p>
+<p>误差项可以定义为： $\mathbf{e}_i &#x3D; \mathbf{p}_{1,i} - T_{12} \mathbf{p}_{2,i}$</p>
+<p>我们要最小化 $\sum_i ||\mathbf{e}_i||^2$。</p>
+<h3 id="2-思考过程：如何用图优化解决？"><a href="#2-思考过程：如何用图优化解决？" class="headerlink" title="2. 思考过程：如何用图优化解决？"></a>2. 思考过程：如何用图优化解决？</h3><ul>
+<li><p><strong>顶点 (Vertex) 代表什么？</strong></p>
+<ul>
+<li>未知变量是待优化的相对位姿 $T_{12}$。</li>
+<li><strong>因此，我们将 $T_{12}$ 定义为一个 <code>g2o::VertexSE3Expmap</code> 顶点。</strong> 只需要一个顶点。</li>
+</ul>
+</li>
+<li><p><strong>边 (Edge) 代表什么？</strong></p>
+<ul>
+<li>约束来自于每一对匹配点 $(\mathbf{p}_{1,i}, \mathbf{p}_{2,i})$。</li>
+<li>每一对点都要求：变换后的点 $T_{12} \mathbf{p}_{2,i}$ 应该接近目标点 $\mathbf{p}_{1,i}$。</li>
+<li><strong>因此，每一对匹配点 $(\mathbf{p}_{1,i}, \mathbf{p}_{2,i})$ 都对应图中的一条边。</strong> 这条边衡量了 $\mathbf{p}_{1,i}$ 和 $T_{12} \mathbf{p}_{2,i}$ 之间的三维向量误差。</li>
+</ul>
+</li>
+<li><p><strong>顶点和边如何连接？</strong></p>
+<ul>
+<li>计算第 $i$ 对点的误差 $\mathbf{e}_i &#x3D; \mathbf{p}_{1,i} - T_{12} \mathbf{p}_{2,i}$ 时，我们只用到<strong>一个</strong>待优化的变量——位姿 $T_{12}$。点 $\mathbf{p}_{1,i}$ 和 $\mathbf{p}_{2,i}$ 的坐标在这个例子中是<strong>固定</strong>的。</li>
+<li><strong>因此，每条边只连接到那个唯一的位姿顶点上，是 一元边 (Unary Edge)。</strong></li>
+</ul>
+</li>
+<li><p><strong>点坐标如何处理？</strong></p>
+<ul>
+<li>$\mathbf{p}_{1,i}$：可以看作是这条边的 <strong>测量值 (Measurement)</strong>，即我们期望变换后的点应该到达的目标位置。</li>
+<li>$\mathbf{p}_{2,i}$：它是计算误差时需要用到的<strong>固定数据</strong>，它不是测量值，也不是待优化变量。它需要与边实例关联起来。</li>
+</ul>
+</li>
+</ul>
+<p><strong>总结思路：</strong> 创建一个图，包含：</p>
+<ul>
+<li>1 个 <code>VertexSE3Expmap</code> 顶点 (表示待优化的位姿 $T_{12}$)。</li>
+<li>N 条 <strong>自定义的一元边</strong> (每条边对应一对匹配点 $(\mathbf{p}_{1,i}, \mathbf{p}_{2,i})$)。<ul>
+<li>每条边存储 $\mathbf{p}_{2,i}$ 作为固定数据。</li>
+<li>每条边以 $\mathbf{p}_{1,i}$ 作为测量值。</li>
+<li>每条边计算误差 $\mathbf{e}_i &#x3D; \mathbf{p}_{1,i} - T_{12} \mathbf{p}_{2,i}$。<br>让 g2o 优化这个图，调整位姿顶点的值，使得所有边的误差平方和（考虑信息矩阵）最小。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-g2o-实现步骤"><a href="#3-g2o-实现步骤" class="headerlink" title="3. g2o 实现步骤"></a>3. g2o 实现步骤</h3><p><strong>3.1 自定义边的类型 (<code>EdgeProjectXYZRGBDPoseOnly</code>)</strong></p>
+<ul>
+<li><strong>原因:</strong> g2o 没有预定义完全符合 $\mathbf{e}_i &#x3D; \mathbf{p}_{1,i} - T \mathbf{p}_{2,i}$ 这种形式误差的一元边。我们需要自己创建一个。</li>
+<li><strong>实现:</strong><ul>
+<li><strong>继承:</strong> <code>g2o::BaseUnaryEdge&lt;D, E, VertexType&gt;</code>。<ul>
+<li><code>D</code> (误差维度): 误差是 3D 向量差，<code>D = 3</code>。</li>
+<li><code>E</code> (测量值类型): 测量值是目标点 $\mathbf{p}_{1,i}$，类型为 <code>Eigen::Vector3d</code>。</li>
+<li><code>VertexType</code>: 连接的顶点是位姿，类型为 <code>g2o::VertexSE3Expmap</code>。</li>
+<li>所以继承 <code>g2o::BaseUnaryEdge&lt;3, Eigen::Vector3d, g2o::VertexSE3Expmap&gt;</code>。</li>
+</ul>
+</li>
+<li><strong>构造函数:</strong> 需要传入并存储固定的点坐标 $\mathbf{p}_{2,i}$。代码中将其命名为 <code>_point</code>。<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">EdgeProjectXYZRGBDPoseOnly</span>(<span class="type">const</span> Eigen::Vector3d&amp; point) : _point(point) &#123;&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>重写 <code>computeError()</code>:</strong><ol>
+<li>获取位姿顶点 <code>pose = _vertices[0]</code>。</li>
+<li>获取当前位姿估计 <code>T = pose-&gt;estimate()</code>。</li>
+<li>使用当前位姿 T 变换存储的固定点 <code>_point</code> (即 $\mathbf{p}_{2,i}$): <code>transformed_point = T.map(_point)</code>。</li>
+<li>计算误差：<code>_error = _measurement - transformed_point</code>。其中 <code>_measurement</code> 存储的是目标点 $\mathbf{p}_{1,i}$。</li>
+</ol>
+</li>
+<li><strong>重写 <code>linearizeOplus()</code> (计算雅可比):</strong><ol>
+<li>获取当前位姿 <code>T</code> 和变换后的点 <code>xyz_trans = T.map(_point)</code>。</li>
+<li>计算误差 $\mathbf{e} &#x3D; \mathbf{p}_1 - T \mathbf{p}_2$ 对位姿顶点（在 se(3) 李代数上的 6D 扰动 $\delta \boldsymbol{\xi} &#x3D; (\delta \omega_x, \delta \omega_y, \delta \omega_z, \delta t_x, \delta t_y, \delta t_z)^T$）的雅可比矩阵 $\frac{\partial \mathbf{e}}{\partial \delta \boldsymbol{\xi}}$。</li>
+<li>根据链式法则和 SE(3) 的性质，可以推导出（假设扰动是左乘的）：<br>$$\frac{\partial \mathbf{e}}{\partial \delta \boldsymbol{\xi}} &#x3D; - \frac{\partial (T \mathbf{p}_2)}{\partial \delta \boldsymbol{\xi}} &#x3D; - \begin{pmatrix} -[\mathbf{p}’]_\times &amp; \mathbf{I} \end{pmatrix} &#x3D; \begin{pmatrix} [\mathbf{p}’]_\times &amp; -\mathbf{I} \end{pmatrix}$$<br>其中 $\mathbf{p}’ &#x3D; T \mathbf{p}_2 &#x3D; \text{xyz_trans}$。</li>
+<li>将这个 3x6 的雅可比矩阵赋值给 <code>_jacobianOplusXi</code> (因为是一元边，只有 Xi)。代码中直接给出了展开形式。</li>
+</ol>
+</li>
+<li><code>read</code>&#x2F;<code>write</code> 函数在此例中留空。</li>
+</ul>
+</li>
+</ul>
+<p><strong>3.2 顶点类型</strong></p>
+<ul>
+<li>使用 g2o 预定义的 <code>g2o::VertexSE3Expmap</code> 来表示待优化的位姿。</li>
+</ul>
+<p><strong>3.3 配置优化器</strong></p>
+<ul>
+<li>与 BA 示例类似，配置 <code>BlockSolver</code> (这里用了 <code>BlockSolverTraits&lt;6, 3&gt;</code>)、<code>LinearSolverCSparse</code> 和 <code>OptimizationAlgorithmLevenberg</code>。</li>
+<li>创建 <code>SparseOptimizer</code> 并设置算法和 <code>verbose</code>。</li>
+</ul>
+<p><strong>3.4 构建图</strong></p>
+<ul>
+<li><strong>添加顶点:</strong><ol>
+<li>创建 <code>VertexSE3Expmap</code> 对象。</li>
+<li>设置 ID (0)。</li>
+<li>设置<strong>初始位姿估计</strong> (<code>setEstimate</code>)。注意：代码中给了单位阵和零向量作为初始值，但在实际应用中，应该传入通过其他方法（如 RANSAC+SVD 或 粗略 ICP）得到的初始 R 和 t。</li>
+<li>添加到优化器。</li>
+</ol>
+</li>
+<li><strong>添加边:</strong><ol>
+<li>遍历所有匹配点对 (<code>pts1[i]</code>, <code>pts2[i]</code>)。</li>
+<li>创建自定义的 <code>EdgeProjectXYZRGBDPoseOnly</code> 对象，<strong>将 <code>pts2[i]</code> (转换成 <code>Eigen::Vector3d</code>) 传入构造函数</strong>。</li>
+<li>设置边的唯一 ID (从 1 开始)。</li>
+<li><strong>连接到顶点:</strong> <code>edge-&gt;setVertex(0, pose)</code>，连接到唯一的位姿顶点。</li>
+<li><strong>设置测量值:</strong> <code>edge-&gt;setMeasurement(...)</code>，传入目标点 <code>pts1[i]</code> (转换成 <code>Eigen::Vector3d</code>)。</li>
+<li><strong>设置信息矩阵:</strong> <code>edge-&gt;setInformation(Eigen::Matrix3d::Identity() * 1e4)</code>。这里使用了单位矩阵乘以一个较大的数 <code>1e4</code>。这意味着我们对所有的点对匹配给予了<strong>很高的信任度（权重）</strong>，假设它们的误差都应该很小。在实际应用中，可以根据匹配质量或点的不确定性来设置不同的信息矩阵。</li>
+<li>添加到优化器。</li>
+</ol>
+</li>
+</ul>
+<p><strong>3.5 执行优化</strong></p>
+<ul>
+<li>调用 <code>optimizer.initializeOptimization()</code>。</li>
+<li>调用 <code>optimizer.optimize(num_iterations)</code> (代码中是 10 次)。</li>
+</ul>
+<p><strong>3.6 获取结果</strong></p>
+<ul>
+<li>从位姿顶点 <code>pose</code> 获取优化后的估计值 <code>pose-&gt;estimate()</code>。</li>
+<li>将其转换为 <code>Eigen::Isometry3d</code> 并输出变换矩阵。</li>
+</ul>
+<h3 id="4-准备工作"><a href="#4-准备工作" class="headerlink" title="4. 准备工作"></a>4. 准备工作</h3><ul>
+<li><strong>包含头文件:</strong> g2o 核心库、求解器、算法、<code>VertexSE3Expmap</code>、<code>BaseUnaryEdge</code>、Eigen 等。</li>
+<li><strong>准备输入数据:</strong><ul>
+<li><code>std::vector&lt;cv::Point3f&gt; pts1</code>: 目标点云坐标。</li>
+<li><code>std::vector&lt;cv::Point3f&gt; pts2</code>: 源点云坐标（待变换的点）。<strong>注意 <code>pts1</code> 和 <code>pts2</code> 必须是严格对应的</strong>。</li>
+<li><code>cv::Mat R</code>, <code>cv::Mat t</code>: 初始的位姿估计（尽管代码中 <code>bundleAdjustment</code> 函数内部没有使用传入的 R, t 来设置初始值，而是用了单位阵，但在实际调用时应该用它们来设置 <code>pose-&gt;setEstimate</code>）。</li>
+</ul>
+</li>
+<li><strong>数据类型转换:</strong> 将 <code>cv::Point3f</code> 转换为 <code>Eigen::Vector3d</code>。</li>
+</ul>
+<h3 id="5-关键代码片段-带注释"><a href="#5-关键代码片段-带注释" class="headerlink" title="5. 关键代码片段 (带注释)"></a>5. 关键代码片段 (带注释)</h3><pre><code class="language-c++">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;cmath&gt;
+
+// Eigen 核心库
+#include &lt;Eigen/Core&gt;
+#include &lt;Eigen/Geometry&gt;
+
+// g2o 核心库
+#include &lt;g2o/core/sparse_optimizer.h&gt;
+#include &lt;g2o/core/block_solver.h&gt;
+#include &lt;g2o/core/optimization_algorithm_levenberg.h&gt;
+#include &lt;g2o/core/base_vertex.h&gt;
+#include &lt;g2o/core/base_unary_edge.h&gt; // 一元边基类
+
+// g2o 线性求解器
+#include &lt;g2o/solvers/csparse/linear_solver_csparse.h&gt;
+
+// g2o 类型定义
+#include &lt;g2o/types/slam3d/vertex_se3_expmap.h&gt; // VertexSE3Expmap
+#include &lt;g2o/types/slam3d/se3quat.h&gt;          // SE3Quat
+
+// OpenCV (仅用于数据结构 Point3f, Mat)
+#include &lt;opencv2/core/core.hpp&gt;
+
+using namespace std;
+using namespace g2o;
+
+// --- 1. 自定义边：用于 3D-3D 点对的位姿优化 ---
+// 模板参数：误差维度 D=3, 测量值类型 E=Eigen::Vector3d, 连接顶点类型 VertexSE3Expmap
+class EdgeProjectXYZRGBDPoseOnly : public BaseUnaryEdge&lt;3, Eigen::Vector3d, VertexSE3Expmap&gt; &#123;
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
+    // 构造函数：传入需要被变换的点 p2 的坐标
+    EdgeProjectXYZRGBDPoseOnly(const Eigen::Vector3d &amp;point) : _point(point) &#123;&#125;
+
+    // 读写函数 (本例忽略)
+    virtual bool read(istream &amp;in) override &#123; return false; &#125;
+    virtual bool write(ostream &amp;out) const override &#123; return false; &#125;
+
+    // 计算误差函数： error = p1 - T * p2
+    virtual void computeError() override &#123;
+        // 获取连接的位姿顶点
+        const VertexSE3Expmap *pose = static_cast&lt;const VertexSE3Expmap *&gt;(_vertices[0]);
+        // 计算变换后的点 T * p2 (其中 p2 是存储在 _point 中的)
+        Eigen::Vector3d transformed_point = pose-&gt;estimate().map(_point);
+        // 计算误差 error = measurement - transformed_point (measurement 是 p1)
+        _error = _measurement - transformed_point;
+    &#125;
+
+    // 计算雅可比矩阵： d(error) / d(delta_xi) = [p&#39;]_x, -I
+    virtual void linearizeOplus() override &#123;
+        VertexSE3Expmap *pose = static_cast&lt;VertexSE3Expmap *&gt;(_vertices[0]);
+        SE3Quat T(pose-&gt;estimate());
+        // 计算变换后的点 p&#39; = T * p2
+        Eigen::Vector3d xyz_trans = T.map(_point);
+        double x = xyz_trans[0];
+        double y = xyz_trans[1];
+        double z = xyz_trans[2];
+
+        // 雅可比矩阵 _jacobianOplusXi (3x6)
+        // 对应扰动 delta_xi = (omega_x, omega_y, omega_z, v_x, v_y, v_z)
+        // J = [ [p&#39;]_x   -I ]
+        _jacobianOplusXi(0, 0) = 0;    // d(error_x)/d(omega_x)
+        _jacobianOplusXi(0, 1) = -z;   // d(error_x)/d(omega_y)
+        _jacobianOplusXi(0, 2) = y;    // d(error_x)/d(omega_z)
+        _jacobianOplusXi(0, 3) = -1;   // d(error_x)/d(v_x)
+        _jacobianOplusXi(0, 4) = 0;    // d(error_x)/d(v_y)
+        _jacobianOplusXi(0, 5) = 0;    // d(error_x)/d(v_z)
+
+        _jacobianOplusXi(1, 0) = z;    // d(error_y)/d(omega_x)
+        _jacobianOplusXi(1, 1) = 0;    // d(error_y)/d(omega_y)
+        _jacobianOplusXi(1, 2) = -x;   // d(error_y)/d(omega_z)
+        _jacobianOplusXi(1, 3) = 0;    // d(error_y)/d(v_x)
+        _jacobianOplusXi(1, 4) = -1;   // d(error_y)/d(v_y)
+        _jacobianOplusXi(1, 5) = 0;    // d(error_y)/d(v_z)
+
+        _jacobianOplusXi(2, 0) = -y;   // d(error_z)/d(omega_x)
+        _jacobianOplusXi(2, 1) = x;    // d(error_z)/d(omega_y)
+        _jacobianOplusXi(2, 2) = 0;    // d(error_z)/d(omega_z)
+        _jacobianOplusXi(2, 3) = 0;    // d(error_z)/d(v_x)
+        _jacobianOplusXi(2, 4) = 0;    // d(error_z)/d(v_y)
+        _jacobianOplusXi(2, 5) = -1;   // d(error_z)/d(v_z)
+    &#125;
+
+protected:
+    Eigen::Vector3d _point; // 存储需要被变换的点 p2 的坐标
+&#125;;
+
+// --- 2. BA 函数主体 (ICP 位姿精化) ---
+void bundleAdjustment(
+    const std::vector&lt;cv::Point3f&gt; &amp;pts1, // 目标点云 (坐标系 1)
+    const std::vector&lt;cv::Point3f&gt; &amp;pts2, // 源点云 (坐标系 2)
+    cv::Mat &amp;R, cv::Mat &amp;t) &#123;             // 初始/优化后的位姿 (R, t 从系统 2 到系统 1)
+
+    // --- 配置 g2o 优化器 (与之前类似) ---
+    typedef BlockSolver&lt;BlockSolverTraits&lt;6, 3&gt;&gt; BlockSolverType;
+    typedef LinearSolverCSparse&lt;BlockSolverType::PoseMatrixType&gt; LinearSolverType;
+    auto linearSolver = std::make_unique&lt;LinearSolverType&gt;();
+    auto blockSolver = std::make_unique&lt;BlockSolverType&gt;(std::move(linearSolver));
+    OptimizationAlgorithmLevenberg *algorithm = new OptimizationAlgorithmLevenberg(std::move(blockSolver));
+    SparseOptimizer optimizer;
+    optimizer.setAlgorithm(algorithm);
+    optimizer.setVerbose(true);
+
+    // --- 添加顶点 (只有一个位姿顶点) ---
+    VertexSE3Expmap *pose = new VertexSE3Expmap();
+    pose-&gt;setId(0);
+    // **注意:** 这里设置了单位阵初始值，实际应用中应使用传入的 R, t
+    // Eigen::Matrix3d R_mat; // ... 从 cv::Mat R 转换 ...
+    // Eigen::Vector3d t_vec; // ... 从 cv::Mat t 转换 ...
+    // pose-&gt;setEstimate(SE3Quat(R_mat, t_vec));
+    pose-&gt;setEstimate(SE3Quat(Eigen::Matrix3d::Identity(), Eigen::Vector3d(0, 0, 0))); // 示例中使用单位阵
+    optimizer.addVertex(pose);
+
+    // --- 添加边 (每个点对一条边) ---
+    int index = 1; // 边 ID 从 1 开始
+    for (size_t i = 0; i &lt; pts1.size(); i++) &#123;
+        // 创建自定义边，传入需要变换的点 pts2[i]
+        EdgeProjectXYZRGBDPoseOnly *edge = new EdgeProjectXYZRGBDPoseOnly(
+            Eigen::Vector3d(pts2[i].x, pts2[i].y, pts2[i].z));
+        edge-&gt;setId(index);
+        // 连接到唯一的位姿顶点 (ID=0)
+        edge-&gt;setVertex(0, pose); // dynamic_cast 在这里可能更安全，但如果确定类型可以省略
+        // 设置测量值 (目标点 pts1[i])
+        edge-&gt;setMeasurement(Eigen::Vector3d(pts1[i].x, pts1[i].y, pts1[i].z));
+        // 设置信息矩阵 (权重)
+        // 使用单位阵乘以较大的系数，表示对匹配点对的信任度高
+        edge-&gt;setInformation(Eigen::Matrix3d::Identity() * 1e4);
+        optimizer.addEdge(edge);
+        index++;
+    &#125;
+
+    // --- 执行优化 ---
+    cout &lt;&lt; &quot;Starting optimization...&quot; &lt;&lt; endl;
+    optimizer.initializeOptimization();
+    optimizer.optimize(10); // 执行 10 次迭代
+
+    // --- 输出结果 ---
+    cout &lt;&lt; &quot;Optimization finished.&quot; &lt;&lt; endl;
+    SE3Quat optimized_pose = pose-&gt;estimate();
+    cout &lt;&lt; &quot;Optimized Transformation Matrix (T_1_2): &quot; &lt;&lt; endl &lt;&lt; Eigen::Isometry3d(optimized_pose).matrix() &lt;&lt; endl;
+
+    // (可选) 将优化后的 pose 更新回输入的 R, t
+&#125;
+</code></pre>
+</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424185551027.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/04/28/c9/" title="C++学习笔记—g2o库—BA"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424185643878.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">C++学习笔记—g2o库—BA</div></div><div class="info-2"><div class="info-item-1">1. 问题描述我们有一个相机，它在某个未知的位置和姿态（合称位姿）下拍摄了一张照片。我们知道：  一些三维空间点的坐标 (points_3d)。 这些三维点在相机拍摄的照片上对应的二维像素坐标 (points_2d)。 相机的内部参数（焦距、主点），通常表示为一个内参矩阵 K。 相机位姿的一个初始估计值（旋转矩阵 R 和平移向量 t）。  由于三维点坐标的测量、二维点观测以及初始位姿估计都可能存在误差，直接将三维点通过初始位姿和内参投影到图像平面，得到的二维坐标通常不会精确地等于观测到的二维坐标。 目标： 同时优化调整相机的位姿 (R, t) 和 三维点的空间坐标 (points_3d)，使得所有三维点在优化后的位姿下，根据相机内参投影到图像平面上的重投影坐标与观测到的二维坐标 (points_2d) 之间的误差（重投影误差） 的总和最小。 这本质上是一个大规模的非线性最小二乘优化问题。 2. 思考过程：如何用图优化解决？我们将 BA 问题转化为 g2o 的图模型：  顶点 (Vertex) 代表什么？  顶点代表需要优化的未知变量。 在这个问题中，未知变量有两类： 相机的位姿...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">11</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-text">1. 问题描述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%80%9D%E8%80%83%E8%BF%87%E7%A8%8B%EF%BC%9A%E5%A6%82%E4%BD%95%E7%94%A8%E5%9B%BE%E4%BC%98%E5%8C%96%E8%A7%A3%E5%86%B3%EF%BC%9F"><span class="toc-text">2. 思考过程：如何用图优化解决？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-g2o-%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="toc-text">3. g2o 实现步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-text">4. 准备工作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%85%B3%E9%94%AE%E4%BB%A3%E7%A0%81%E7%89%87%E6%AE%B5-%E5%B8%A6%E6%B3%A8%E9%87%8A"><span class="toc-text">5. 关键代码片段 (带注释)</span></a></li></ol></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
