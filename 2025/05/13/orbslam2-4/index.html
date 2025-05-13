@@ -1,0 +1,268 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>通过词袋进行匹配 | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="词袋模型 (Bag-of-Words, BoW)1. 基本概念词袋模型源于自然语言处理，在计算机视觉中被借鉴用于图像表示和检索。其核心思想是：  将图像看作是由一些基本的“视觉单词”（Visual Words）组成的文档。 忽略特征点的空间布局信息（至少在生成 BoW 向量时），只关心图像中出现了哪些视觉单词以及它们的频率。 目的是得到一个能够概括图像内容的、紧凑的全局描述符。  2. ORB-S">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过词袋进行匹配">
+<meta property="og:url" content="https://feiyblog.netlify.app/2025/05/13/orbslam2-4/index.html">
+<meta property="og:site_name" content="我的学习笔记">
+<meta property="og:description" content="词袋模型 (Bag-of-Words, BoW)1. 基本概念词袋模型源于自然语言处理，在计算机视觉中被借鉴用于图像表示和检索。其核心思想是：  将图像看作是由一些基本的“视觉单词”（Visual Words）组成的文档。 忽略特征点的空间布局信息（至少在生成 BoW 向量时），只关心图像中出现了哪些视觉单词以及它们的频率。 目的是得到一个能够概括图像内容的、紧凑的全局描述符。  2. ORB-S">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png">
+<meta property="article:published_time" content="2025-05-13T07:17:18.000Z">
+<meta property="article:modified_time" content="2025-05-13T07:18:25.691Z">
+<meta property="article:author" content="Xue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "通过词袋进行匹配",
+  "url": "https://feiyblog.netlify.app/2025/05/13/orbslam2-4/",
+  "image": "https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png",
+  "datePublished": "2025-05-13T07:17:18.000Z",
+  "dateModified": "2025-05-13T07:18:25.691Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Xue",
+      "url": "https://feiyblog.netlify.app/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424131237614.png"><link rel="canonical" href="https://feiyblog.netlify.app/2025/05/13/orbslam2-4/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?568315545f51aa0aac415d8a71f8bd8f";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '通过词袋进行匹配',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">通过词袋进行匹配</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">通过词袋进行匹配</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-13T07:17:18.000Z" title="发表于 2025-05-13 15:17:18">2025-05-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-13T07:18:25.691Z" title="更新于 2025-05-13 15:18:25">2025-05-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/SLAM/">SLAM</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="词袋模型-Bag-of-Words-BoW"><a href="#词袋模型-Bag-of-Words-BoW" class="headerlink" title="词袋模型 (Bag-of-Words, BoW)"></a>词袋模型 (Bag-of-Words, BoW)</h1><h2 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. 基本概念</h2><p>词袋模型源于自然语言处理，在计算机视觉中被借鉴用于图像表示和检索。其核心思想是：</p>
+<ul>
+<li>将图像看作是由一些基本的“视觉单词”（Visual Words）组成的文档。</li>
+<li>忽略特征点的空间布局信息（至少在生成 BoW 向量时），只关心图像中出现了哪些视觉单词以及它们的频率。</li>
+<li>目的是得到一个能够概括图像内容的、紧凑的全局描述符。</li>
+</ul>
+<h2 id="2-ORB-SLAM2-中的-BoW-实现"><a href="#2-ORB-SLAM2-中的-BoW-实现" class="headerlink" title="2. ORB-SLAM2 中的 BoW 实现"></a>2. ORB-SLAM2 中的 BoW 实现</h2><h3 id="a-视觉词典-Visual-Vocabulary-Dictionary"><a href="#a-视觉词典-Visual-Vocabulary-Dictionary" class="headerlink" title="a. 视觉词典 (Visual Vocabulary &#x2F; Dictionary)"></a>a. 视觉词典 (Visual Vocabulary &#x2F; Dictionary)</h3><ul>
+<li><strong>构建</strong>：这是一个<strong>离线预训练</strong>的过程。使用大量不同场景下的 ORB 特征描述子，通过聚类算法（如层次 K-Means）构建一个<strong>词典树（Vocabulary Tree）</strong>。</li>
+<li><strong>结构</strong>：树的叶子节点代表一个<strong>视觉单词</strong>。每个视觉单词对应着描述子空间中的一个聚类中心。词典通常包含大量（例如 $10^4$ - $10^6$）视觉单词。</li>
+<li><strong>作用</strong>：提供一个标准化的参照系，用于将连续的 ORB 描述子**量化（Quantize）**为离散的视觉单词 ID。</li>
+</ul>
+<h3 id="b-特征描述子量化"><a href="#b-特征描述子量化" class="headerlink" title="b. 特征描述子量化"></a>b. 特征描述子量化</h3><ul>
+<li>对于图像中提取的每一个 ORB 特征描述子，在词典树中进行高效查找，找到与其最相似（距离最近）的视觉单词。</li>
+<li>该特征点就被赋予了这个视觉单词的 ID。</li>
+</ul>
+<h3 id="c-BoW-向量生成"><a href="#c-BoW-向量生成" class="headerlink" title="c. BoW 向量生成"></a>c. BoW 向量生成</h3><ul>
+<li>对整个图像（通常是关键帧），统计其中所有特征点被量化后的视觉单词 ID。</li>
+<li>生成一个<strong>稀疏向量</strong>（BoW Vector），其维度等于词典中视觉单词的总数。</li>
+<li>向量的每个元素表示对应视觉单词在该图像中出现的<strong>频率</strong>或<strong>权重</strong>（常用 <strong>TF-IDF</strong> - Term Frequency–Inverse Document Frequency - 来计算权重，以突出那些在当前帧常见但在整个数据集中不常见的词，增强区分度）。</li>
+<li>这个 BoW 向量可以看作是该图像的<strong>全局“指纹”</strong>。</li>
+</ul>
+<h2 id="3-BoW-在-ORB-SLAM2-中的主要应用"><a href="#3-BoW-在-ORB-SLAM2-中的主要应用" class="headerlink" title="3. BoW 在 ORB-SLAM2 中的主要应用"></a>3. BoW 在 ORB-SLAM2 中的主要应用</h2><p>BoW 的核心优势在于<strong>高效的相似性检索</strong>，主要用于：</p>
+<h3 id="a-闭环检测-Loop-Closure-Detection"><a href="#a-闭环检测-Loop-Closure-Detection" class="headerlink" title="a. 闭环检测 (Loop Closure Detection)"></a>a. 闭环检测 (Loop Closure Detection)</h3><ul>
+<li><strong>目标</strong>：检测相机是否回到了先前经过的区域。</li>
+<li><strong>方法</strong>：<ol>
+<li>将当前帧（或新生成的关键帧）的 BoW 向量与数据库中存储的历史关键帧的 BoW 向量进行比较（计算相似度得分）。</li>
+<li>利用 <strong>DBoW2</strong> 库中的倒排索引等加速结构，可以非常快速地找到 BoW 向量相似度高的候选关键帧。</li>
+<li>高相似度意味着两个关键帧在视觉内容上可能很接近，是潜在的闭环候选帧。</li>
+</ol>
+</li>
+</ul>
+<h3 id="b-重定位-Relocalization"><a href="#b-重定位-Relocalization" class="headerlink" title="b. 重定位 (Relocalization)"></a>b. 重定位 (Relocalization)</h3><ul>
+<li><strong>目标</strong>：当跟踪丢失时，确定相机当前在地图中的位置。</li>
+<li><strong>方法</strong>：<ol>
+<li>计算当前帧的 BoW 向量。</li>
+<li>在关键帧数据库中搜索与之 BoW 向量最相似的关键帧。</li>
+<li>这些相似的关键帧及其位姿可以为当前帧提供一个初始的位姿估计。</li>
+</ol>
+</li>
+</ul>
+<h2 id="4-BoW-在-ORB-SLAM2-中的次要应用：加速特征匹配"><a href="#4-BoW-在-ORB-SLAM2-中的次要应用：加速特征匹配" class="headerlink" title="4. BoW 在 ORB-SLAM2 中的次要应用：加速特征匹配"></a>4. BoW 在 ORB-SLAM2 中的次要应用：加速特征匹配</h2><ul>
+<li><strong>场景</strong>：当通过 BoW 向量比较<strong>已找到</strong>潜在的闭环&#x2F;重定位候选帧后，需要在当前帧和候选帧之间进行精确的<strong>特征点匹配</strong>，以进行几何验证和位姿计算。</li>
+<li><strong>方法</strong>：可以利用特征点所属的视觉单词信息来加速匹配。如果两个特征点是真匹配，它们的描述子很可能属于同一个视觉单词。因此，可以：<ul>
+<li><strong>优先</strong>匹配属于同一视觉单词的特征点对。</li>
+<li><strong>只</strong>在属于同一视觉单词的特征点子集之间进行匹配尝试。</li>
+</ul>
+</li>
+<li><strong>优势</strong>：减少了需要进行暴力匹配的特征点对数量，提高了后续几何验证步骤的效率。</li>
+</ul>
+<h2 id="5-与连续帧跟踪的区别"><a href="#5-与连续帧跟踪的区别" class="headerlink" title="5. 与连续帧跟踪的区别"></a>5. 与连续帧跟踪的区别</h2><ul>
+<li>在**连续帧跟踪（Tracking）**过程中，ORB-SLAM2 <strong>主要不依赖</strong> BoW 进行特征匹配。</li>
+<li>Tracking 更多地使用基于<strong>上一帧位姿和地图点</strong>的<strong>投影匹配</strong>，并结合<strong>局部区域搜索</strong>（如 <code>Frame::GetFeaturesInArea</code>）来高效、准确地找到匹配。</li>
+</ul>
+<h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. 总结</h2><p>ORB-SLAM2 中的 BoW 模型是一个强大的工具，它通过将图像内容表示为视觉单词的集合，生成紧凑的全局描述符 (BoW Vector)。这使得系统能够<strong>极快地在大量关键帧中检索视觉上相似的场景</strong>，是实现高效<strong>闭环检测</strong>和<strong>重定位</strong>的关键技术。同时，它也能在后续步骤中<strong>辅助加速特征点匹配</strong>过程。</p>
+</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/05/13/orbslam2-3/" title="单目初始化中的特征匹配"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">单目初始化中的特征匹配</div></div><div class="info-2"><div class="info-item-1">Frame::GetFeaturesInArea 函数1. 函数目标该函数的核心目的是在给定的图像帧 (Frame) 中，高效地查找满足以下条件的特征点：  位于以指定点 (x, y) 为圆心、r 为半径的圆形区域内。 其所在的图像金字塔层级 (octave) 在指定的 [minLevel, maxLevel] 范围内（可选）。  这在特征匹配、局部地图跟踪等场景中非常常用，需要在某个预期位置附近搜索对应的特征点。 2. 面临的挑战与常规思路如果图像中有大量特征点（例如上千个），最直观的方法是：  遍历当前帧中的所有特征点。 对每一个特征点，计算它到圆心 (x, y) 的距离。 判断距离是否小于 r，并且层级是否符合要求。  缺点： 计算量巨大，需要对所有点进行距离计算，对于实时性要求高的 SLAM 系统来说效率太低。 3. ORB-SLAM2 的优化策略：网格化加速 (Grid-based Acceleration)为了解决效率问题，ORB-SLAM2 采用了空间划分的思想，具体为网格化：  预处理：在提取特征点后，系统会根据每个特征点的坐标，将其分配到预先划分好的二维网格...</div></div></div></a><a class="pagination-related" href="/2025/05/13/orbslam2-5/" title="投影匹配--帧间跟踪版"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">投影匹配--帧间跟踪版</div></div><div class="info-2"><div class="info-item-1">(SearchByProjection) 函数1. 函数目标与核心思想SearchByProjection 是 ORB-SLAM2 中用于连续帧间跟踪 (Frame-to-Frame Tracking) 的核心函数之一。 核心思想：利用上一帧 (LastFrame) 已经构建好的三维地图点 (MapPoint)，结合当前帧 (CurrentFrame) 的初始位姿估计，来预测这些三维点在当前帧图像上的二维投影位置。然后在这些投影位置附近的小范围内搜索，以找到对应的二维特征点，从而建立匹配关系。 这是一种基于模型的预测与搜索策略，比盲目搜索或纯二维匹配更高效和鲁棒。 2. 前提条件 LastFrame 中已经有一些特征点被成功三角化，并形成了稳定的 MapPoint（即已知其三维世界坐标）。 对 CurrentFrame 的相机位姿 CurrentFrame.mTcw (从世界坐标系到当前相机坐标系的变换) 有一个初始的估计。这个估计可能来自： 匀速运动模型。 上一帧成功跟踪后的位姿。 重定位成功后的位姿。    3. 主要执行步骤与思想a. 准备工作与帧间运动估计 (Code...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%8D%E8%A2%8B%E6%A8%A1%E5%9E%8B-Bag-of-Words-BoW"><span class="toc-text">词袋模型 (Bag-of-Words, BoW)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">1. 基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-ORB-SLAM2-%E4%B8%AD%E7%9A%84-BoW-%E5%AE%9E%E7%8E%B0"><span class="toc-text">2. ORB-SLAM2 中的 BoW 实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#a-%E8%A7%86%E8%A7%89%E8%AF%8D%E5%85%B8-Visual-Vocabulary-Dictionary"><span class="toc-text">a. 视觉词典 (Visual Vocabulary &#x2F; Dictionary)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#b-%E7%89%B9%E5%BE%81%E6%8F%8F%E8%BF%B0%E5%AD%90%E9%87%8F%E5%8C%96"><span class="toc-text">b. 特征描述子量化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#c-BoW-%E5%90%91%E9%87%8F%E7%94%9F%E6%88%90"><span class="toc-text">c. BoW 向量生成</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-BoW-%E5%9C%A8-ORB-SLAM2-%E4%B8%AD%E7%9A%84%E4%B8%BB%E8%A6%81%E5%BA%94%E7%94%A8"><span class="toc-text">3. BoW 在 ORB-SLAM2 中的主要应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#a-%E9%97%AD%E7%8E%AF%E6%A3%80%E6%B5%8B-Loop-Closure-Detection"><span class="toc-text">a. 闭环检测 (Loop Closure Detection)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#b-%E9%87%8D%E5%AE%9A%E4%BD%8D-Relocalization"><span class="toc-text">b. 重定位 (Relocalization)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-BoW-%E5%9C%A8-ORB-SLAM2-%E4%B8%AD%E7%9A%84%E6%AC%A1%E8%A6%81%E5%BA%94%E7%94%A8%EF%BC%9A%E5%8A%A0%E9%80%9F%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D"><span class="toc-text">4. BoW 在 ORB-SLAM2 中的次要应用：加速特征匹配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%8E%E8%BF%9E%E7%BB%AD%E5%B8%A7%E8%B7%9F%E8%B8%AA%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">5. 与连续帧跟踪的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%80%BB%E7%BB%93"><span class="toc-text">6. 总结</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
