@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>docker | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="基本操作1. 拉取镜像 (docker pull)  作用: 从镜像仓库 (默认是 Docker Hub) 下载镜像到你的本地机器。 语法: docker pull &lt;仓库名&gt;&#x2F;&lt;镜像名&gt;:&lt;标签&gt; &lt;仓库名&gt;: 可选，如果是 Docker Hub 上的官方镜像或知名镜像，通常可以省略。如果是个人或其他组织的镜像，需要指定，例如 osrf&#x2F;ros。">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>docker | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="基本操作 1. 拉取镜像 (docker pull)  作用: 从镜像仓库 (默认是 Docker Hub) 下载镜像到你的本地机器。 语法: docker pull &lt;仓库名&gt;&#x2F;&lt;镜像名&gt;:&lt;标签&gt;  &lt;仓库名&gt;: 可选，如果是 Docker Hub 上的官方镜像或知名镜像，通常可以省略。如果是个人或其他组织的镜像，需要指定，例如 osrf&#x2F;ro">
 <meta property="og:type" content="article">
 <meta property="og:title" content="docker">
 <meta property="og:url" content="https://feiyblog.netlify.app/2025/04/29/docker/index.html">
 <meta property="og:site_name" content="我的学习笔记">
-<meta property="og:description" content="基本操作1. 拉取镜像 (docker pull)  作用: 从镜像仓库 (默认是 Docker Hub) 下载镜像到你的本地机器。 语法: docker pull &lt;仓库名&gt;&#x2F;&lt;镜像名&gt;:&lt;标签&gt; &lt;仓库名&gt;: 可选，如果是 Docker Hub 上的官方镜像或知名镜像，通常可以省略。如果是个人或其他组织的镜像，需要指定，例如 osrf&#x2F;ros。">
+<meta property="og:description" content="基本操作 1. 拉取镜像 (docker pull)  作用: 从镜像仓库 (默认是 Docker Hub) 下载镜像到你的本地机器。 语法: docker pull &lt;仓库名&gt;&#x2F;&lt;镜像名&gt;:&lt;标签&gt;  &lt;仓库名&gt;: 可选，如果是 Docker Hub 上的官方镜像或知名镜像，通常可以省略。如果是个人或其他组织的镜像，需要指定，例如 osrf&#x2F;ro">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231459744.png">
 <meta property="article:published_time" content="2025-04-29T13:41:31.000Z">
@@ -168,31 +168,40 @@ btf.addGlobalFn('pjaxComplete', () => {
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231459744.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">docker</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">docker</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-29T13:41:31.000Z" title="发表于 2025-04-29 21:41:31">2025-04-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-29T16:49:52.550Z" title="更新于 2025-04-30 00:49:52">2025-04-30</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/docker/">docker</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><p><strong>1. 拉取镜像 (docker pull)</strong></p>
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231459744.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">docker</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">docker</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-29T13:41:31.000Z" title="发表于 2025-04-29 21:41:31">2025-04-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-29T16:49:52.550Z" title="更新于 2025-04-30 00:49:52">2025-04-30</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/docker/">docker</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h2 id="基本操作"><a class="markdownIt-Anchor" href="#基本操作"></a> 基本操作</h2>
+<p><strong>1. 拉取镜像 (docker pull)</strong></p>
 <ul>
 <li><strong>作用:</strong> 从镜像仓库 (默认是 Docker Hub) 下载镜像到你的本地机器。</li>
-<li><strong>语法:</strong> <code>docker pull &lt;仓库名&gt;/&lt;镜像名&gt;:&lt;标签&gt;</code><ul>
+<li><strong>语法:</strong> <code>docker pull &lt;仓库名&gt;/&lt;镜像名&gt;:&lt;标签&gt;</code>
+<ul>
 <li><code>&lt;仓库名&gt;</code>: 可选，如果是 Docker Hub 上的官方镜像或知名镜像，通常可以省略。如果是个人或其他组织的镜像，需要指定，例如 <code>osrf/ros</code>。</li>
 <li><code>&lt;镜像名&gt;</code>: 必须，例如 <code>ubuntu</code>, <code>ros</code>。</li>
 <li><code>&lt;标签&gt;</code>: 可选，用于指定镜像的版本。如果不指定，默认拉取 <code>latest</code> 标签。<strong>强烈建议总是指定明确的标签</strong>，以保证环境的可复现性。例如 <code>ubuntu:22.04</code>, <code>ros:noetic-ros-base</code>。</li>
 </ul>
 </li>
-<li><strong>示例:</strong><ul>
-<li><p>拉取官方的 Ubuntu 22.04 镜像：你会看到 Docker 开始下载镜像的各个层 (layer)。</p>
+<li><strong>示例:</strong>
+<ul>
+<li>
+<p>拉取官方的 Ubuntu 22.04 镜像：你会看到 Docker 开始下载镜像的各个层 (layer)。</p>
   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull ubuntu:22.04</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>拉取 ROS Noetic 的基础镜像 (来自 Open Source Robotics Foundation)：(这个镜像会大一些，因为它包含了 ROS Noetic 的核心组件)</p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull ros:noetic-ros-base</span><br></pre></td></tr></table></figure></li>
+<li>
+<p>拉取 ROS Noetic 的基础镜像 (来自 Open Source Robotics Foundation)：(这个镜像会大一些，因为它包含了 ROS Noetic 的核心组件)</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull ros:noetic-ros-base</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
 <p><strong>2. 查看本地镜像 (docker images)</strong></p>
 <ul>
-<li><p><strong>作用:</strong> 列出你本地已经下载的所有镜像。</p>
+<li>
+<p><strong>作用:</strong> 列出你本地已经下载的所有镜像。</p>
 </li>
-<li><p><strong>语法:</strong> <code>docker images</code></p>
+<li>
+<p><strong>语法:</strong> <code>docker images</code></p>
 </li>
-<li><p><strong>示例:</strong> 你会看到类似以下的输出：</p>
+<li>
+<p><strong>示例:</strong> 你会看到类似以下的输出：</p>
   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure>
   <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">REPOSITORY          TAG               IMAGE ID       CREATED        SIZE</span><br><span class="line">ubuntu              22.04             xxxxxxxxxxxx   xx weeks ago   77.8MB</span><br><span class="line">ros                 noetic-ros-base   yyyyyyyyyyyy   xx weeks ago   1.07GB</span><br><span class="line">hello-world         latest            zzzzzzzzzzzz   xx months ago  13.3kB</span><br></pre></td></tr></table></figure>
 <ul>
@@ -206,138 +215,193 @@ btf.addGlobalFn('pjaxComplete', () => {
 </ul>
 <p><strong>3. 运行容器 (docker run)</strong></p>
 <ul>
-<li><p><strong>作用:</strong> 使用指定的镜像创建一个新的容器并运行它。这是 Docker 最核心的命令之一。</p>
+<li>
+<p><strong>作用:</strong> 使用指定的镜像创建一个新的容器并运行它。这是 Docker 最核心的命令之一。</p>
 </li>
-<li><p><strong>语法:</strong> <code>docker run [OPTIONS] IMAGE [COMMAND] [ARG...]</code></p>
+<li>
+<p><strong>语法:</strong> <code>docker run [OPTIONS] IMAGE [COMMAND] [ARG...]</code></p>
 </li>
-<li><p><strong>常用选项 (OPTIONS):</strong></p>
-<p>  以下这些选项非常关键：</p>
+<li>
+<p><strong>常用选项 (OPTIONS):</strong></p>
+<p>以下这些选项非常关键：</p>
 <ol>
-<li><p><strong><code>-it</code> (交互式 TTY)</strong></p>
+<li>
+<p><strong><code>-it</code> (交互式 TTY)</strong></p>
 <ul>
-<li><p><code>-i</code> (<code>--interactive</code>): 保持标准输入（STDIN）打开，即使没有附加连接。简单说，允许你向容器输入命令。</p>
+<li>
+<p><code>-i</code> (<code>--interactive</code>): 保持标准输入（STDIN）打开，即使没有附加连接。简单说，允许你向容器输入命令。</p>
 </li>
-<li><p><code>-t</code> (<code>--tty</code>): 分配一个伪终端（pseudo-TTY）。这会模拟一个真实的终端，让你可以像在普通 Linux Shell 里一样交互，比如使用 Tab 补全、看到命令提示符等。</p>
+<li>
+<p><code>-t</code> (<code>--tty</code>): 分配一个伪终端（pseudo-TTY）。这会模拟一个真实的终端，让你可以像在普通 Linux Shell 里一样交互，比如使用 Tab 补全、看到命令提示符等。</p>
 </li>
-<li><p><strong>为什么重要？</strong> 你通常需要进入容器的 Shell 环境进行编译、运行节点、调试等操作，<code>-it</code> 几乎是必备组合。</p>
+<li>
+<p><strong>为什么重要？</strong> 你通常需要进入容器的 Shell 环境进行编译、运行节点、调试等操作，<code>-it</code> 几乎是必备组合。</p>
 </li>
-<li><p><strong>示例:</strong> 这个命令会启动一个基于 <code>ubuntu:20.04</code> 镜像的容器，并直接进入容器的 <code>bash</code> Shell。你可以像在普通的 Ubuntu 终端里一样操作。退出 Shell（输入 <code>exit</code> 或按 <code>Ctrl+D</code>）后，容器通常会停止。</p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it ubuntu:20.04 bash</span><br></pre></td></tr></table></figure></li>
+<li>
+<p><strong>示例:</strong> 这个命令会启动一个基于 <code>ubuntu:20.04</code> 镜像的容器，并直接进入容器的 <code>bash</code> Shell。你可以像在普通的 Ubuntu 终端里一样操作。退出 Shell（输入 <code>exit</code> 或按 <code>Ctrl+D</code>）后，容器通常会停止。</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it ubuntu:20.04 bash</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
-<li><p><strong><code>--rm</code> (自动移除)</strong></p>
+<li>
+<p><strong><code>--rm</code> (自动移除)</strong></p>
 <ul>
-<li><p>当容器退出时，自动删除容器文件系统。</p>
+<li>
+<p>当容器退出时，自动删除容器文件系统。</p>
 </li>
-<li><p><strong>为什么重要？</strong> 每次 <code>docker run</code> 都会创建一个新的容器。如果你只是临时运行一个命令或者进入 Shell 调试，用完就扔，<code>--rm</code> 可以避免产生大量无用的、停止状态的容器，保持 Docker 环境整洁。对于调试和测试非常方便。</p>
+<li>
+<p><strong>为什么重要？</strong> 每次 <code>docker run</code> 都会创建一个新的容器。如果你只是临时运行一个命令或者进入 Shell 调试，用完就扔，<code>--rm</code> 可以避免产生大量无用的、停止状态的容器，保持 Docker 环境整洁。对于调试和测试非常方便。</p>
 </li>
-<li><p><strong>示例:</strong> 当你退出这个 <code>bash</code> 后，这个容器会被彻底删除，<code>docker ps -a</code> 也看不到它了。</p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --<span class="built_in">rm</span> ubuntu:20.04 bash</span><br></pre></td></tr></table></figure></li>
+<li>
+<p><strong>示例:</strong> 当你退出这个 <code>bash</code> 后，这个容器会被彻底删除，<code>docker ps -a</code> 也看不到它了。</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --<span class="built_in">rm</span> ubuntu:20.04 bash</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
-<li><p><strong><code>-d</code> (<code>--detach</code>) (后台运行)</strong></p>
+<li>
+<p><strong><code>-d</code> (<code>--detach</code>) (后台运行)</strong></p>
 <ul>
-<li><p>让容器在后台运行，并打印出容器 ID。</p>
+<li>
+<p>让容器在后台运行，并打印出容器 ID。</p>
 </li>
-<li><p><strong>为什么重要？</strong> 有时候你希望容器作为一个服务在后台持续运行（比如运行一个 ROS Master 或者一个模拟器），而不是占用你的当前终端。</p>
+<li>
+<p><strong>为什么重要？</strong> 有时候你希望容器作为一个服务在后台持续运行（比如运行一个 ROS Master 或者一个模拟器），而不是占用你的当前终端。</p>
 </li>
-<li><p><strong>注意:</strong> 如果使用 <code>-d</code>，通常容器需要运行一个长期在前台执行的进程（比如一个 web 服务、一个 <code>sleep infinity</code> 或者 ROS 节点），否则容器一启动执行完默认命令（如果该命令会结束）就会立刻退出。</p>
+<li>
+<p><strong>注意:</strong> 如果使用 <code>-d</code>，通常容器需要运行一个长期在前台执行的进程（比如一个 web 服务、一个 <code>sleep infinity</code> 或者 ROS 节点），否则容器一启动执行完默认命令（如果该命令会结束）就会立刻退出。</p>
 </li>
-<li><p><strong>示例:</strong></p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动一个后台运行的容器，里面无限睡眠 (常用于创建一个长期运行的基础容器)</span></span><br><span class="line">docker run -d --name my_background_ubuntu ubuntu:20.04 <span class="built_in">sleep</span> infinity</span><br><span class="line"><span class="comment"># 你可以使用 docker exec 进入这个后台运行的容器</span></span><br><span class="line">docker <span class="built_in">exec</span> -it my_background_ubuntu bash</span><br></pre></td></tr></table></figure></li>
+<li>
+<p><strong>示例:</strong></p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动一个后台运行的容器，里面无限睡眠 (常用于创建一个长期运行的基础容器)</span></span><br><span class="line">docker run -d --name my_background_ubuntu ubuntu:20.04 <span class="built_in">sleep</span> infinity</span><br><span class="line"><span class="comment"># 你可以使用 docker exec 进入这个后台运行的容器</span></span><br><span class="line">docker <span class="built_in">exec</span> -it my_background_ubuntu bash</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
-<li><p><strong><code>--name &lt;container_name&gt;</code> (指定名称)</strong></p>
+<li>
+<p><strong><code>--name &lt;container_name&gt;</code> (指定名称)</strong></p>
 <ul>
-<li><p>给容器指定一个易于记忆的名字。如果不指定，Docker 会随机生成一个（比如 <code>vigilant_mclean</code>）。</p>
+<li>
+<p>给容器指定一个易于记忆的名字。如果不指定，Docker 会随机生成一个（比如 <code>vigilant_mclean</code>）。</p>
 </li>
-<li><p><strong>为什么重要？</strong> 有了名字，你可以方便地通过名字来管理容器，比如 <code>docker stop my_slam_container</code>、<code>docker start my_slam_container</code>、<code>docker exec -it my_slam_container bash</code> 等。</p>
+<li>
+<p><strong>为什么重要？</strong> 有了名字，你可以方便地通过名字来管理容器，比如 <code>docker stop my_slam_container</code>、<code>docker start my_slam_container</code>、<code>docker exec -it my_slam_container bash</code> 等。</p>
 </li>
-<li><p><strong>示例:</strong></p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --<span class="built_in">rm</span> --name slam_dev_session ubuntu:20.04 bash</span><br></pre></td></tr></table></figure></li>
+<li>
+<p><strong>示例:</strong></p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --<span class="built_in">rm</span> --name slam_dev_session ubuntu:20.04 bash</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
-<li><p><strong><code>-v</code> 或 <code>--volume</code> (挂载卷)</strong> &#x2F; <code>--mount</code> (更推荐的挂载方式)</p>
+<li>
+<p><strong><code>-v</code> 或 <code>--volume</code> (挂载卷)</strong> / <code>--mount</code> (更推荐的挂载方式)</p>
 <ul>
-<li><p>将宿主机（你的 Ubuntu 22.04）的目录或文件挂载到容器内部。这是<strong>实现代码&#x2F;数据共享和持久化的关键</strong>。</p>
+<li>
+<p>将宿主机（你的 Ubuntu 22.04）的目录或文件挂载到容器内部。这是<strong>实现代码/数据共享和持久化的关键</strong>。</p>
 </li>
-<li><p><strong>为什么对 SLAM 重要？</strong></p>
+<li>
+<p><strong>为什么对 SLAM 重要？</strong></p>
 <ul>
 <li><strong>代码开发:</strong> 你可以在宿主机上用你喜欢的 IDE 编辑代码，然后在容器里编译和运行，代码是实时同步的。</li>
 <li><strong>数据集:</strong> SLAM 数据集通常很大，你不需要把它们复制到镜像里，直接挂载宿主机上的数据集目录即可。</li>
 <li><strong>结果保存:</strong> 容器运行产生的结果（地图、轨迹、日志）可以保存到挂载的宿主机目录，容器删除后结果依然存在。</li>
 </ul>
 </li>
-<li><p><strong>语法 (<code>-v</code>)</strong>: <code>-v &lt;host_path&gt;:&lt;container_path&gt;[:options]</code></p>
+<li>
+<p><strong>语法 (<code>-v</code>)</strong>: <code>-v &lt;host_path&gt;:&lt;container_path&gt;[:options]</code></p>
 </li>
-<li><p><strong>语法 (<code>--mount</code>)</strong>: <code>--mount type=bind,source=&lt;host_path&gt;,target=&lt;container_path&gt;[,readonly]</code> (bind mount 是最常用的类型，效果类似 <code>-v</code>)</p>
+<li>
+<p><strong>语法 (<code>--mount</code>)</strong>: <code>--mount type=bind,source=&lt;host_path&gt;,target=&lt;container_path&gt;[,readonly]</code> (bind mount 是最常用的类型，效果类似 <code>-v</code>)</p>
 </li>
-<li><p><strong>示例 (使用 <code>-v</code>)</strong>:</p>
+<li>
+<p><strong>示例 (使用 <code>-v</code>)</strong>:</p>
   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将宿主机的 ~/slam_ws 目录挂载到容器内的 /root/slam_ws 目录</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> -v ~/slam_ws:/root/slam_ws ubuntu:20.04 bash</span><br><span class="line"><span class="comment"># 进入容器后，你在 /root/slam_ws 看到的就是宿主机 ~/slam_ws 的内容</span></span><br><span class="line"><span class="comment"># 在容器内修改 /root/slam_ws/some_file.txt，宿主机的 ~/slam_ws/some_file.txt 也会同步改变</span></span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>示例 (使用 <code>--mount</code>)</strong>:<code>--mount</code> 语法更清晰，推荐使用。</p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --<span class="built_in">rm</span> --mount <span class="built_in">type</span>=<span class="built_in">bind</span>,<span class="built_in">source</span>=~/slam_ws,target=/root/slam_ws ubuntu:20.04 bash</span><br></pre></td></tr></table></figure></li>
+<li>
+<p><strong>示例 (使用 <code>--mount</code>)</strong>:<code>--mount</code> 语法更清晰，推荐使用。</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -it --<span class="built_in">rm</span> --mount <span class="built_in">type</span>=<span class="built_in">bind</span>,<span class="built_in">source</span>=~/slam_ws,target=/root/slam_ws ubuntu:20.04 bash</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
-<li><p><strong><code>-p</code> 或 <code>--publish</code> (端口映射)</strong></p>
+<li>
+<p><strong><code>-p</code> 或 <code>--publish</code> (端口映射)</strong></p>
 <ul>
-<li><p>将容器的端口映射到宿主机的端口。格式：<code>-p &lt;host_port&gt;:&lt;container_port&gt;</code>。</p>
+<li>
+<p>将容器的端口映射到宿主机的端口。格式：<code>-p &lt;host_port&gt;:&lt;container_port&gt;</code>。</p>
 </li>
-<li><p><strong>为什么对 SLAM 重要？</strong> 如果你在容器里运行了需要网络访问的服务（比如 RViz 的 Web 版本、或者某些算法的监控界面），需要将容器端口暴露给宿主机或其他机器。</p>
+<li>
+<p><strong>为什么对 SLAM 重要？</strong> 如果你在容器里运行了需要网络访问的服务（比如 RViz 的 Web 版本、或者某些算法的监控界面），需要将容器端口暴露给宿主机或其他机器。</p>
 </li>
-<li><p><strong>示例:</strong></p>
+<li>
+<p><strong>示例:</strong></p>
   <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 假设容器内 8080 端口运行了一个 web 服务</span></span><br><span class="line">docker run -d -p 8888:8080 my_web_service_image</span><br><span class="line"><span class="comment"># 现在你可以通过访问宿主机的 8888 端口 (http://localhost:8888) 来访问容器内的 8080 服务</span></span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>对于 ROS:</strong> 很多时候直接使用 <code>--net=host</code> (见下一点) 更方便，避免复杂的端口映射。</p>
+<li>
+<p><strong>对于 ROS:</strong> 很多时候直接使用 <code>--net=host</code> (见下一点) 更方便，避免复杂的端口映射。</p>
 </li>
 </ul>
 </li>
-<li><p><strong><code>--net</code> 或 <code>--network</code> (网络模式)</strong></p>
+<li>
+<p><strong><code>--net</code> 或 <code>--network</code> (网络模式)</strong></p>
 <ul>
-<li><p>配置容器的网络连接方式。常用模式：</p>
+<li>
+<p>配置容器的网络连接方式。常用模式：</p>
 <ul>
 <li><code>bridge</code> (默认): 容器有自己独立的网络栈，通过 Docker 网桥连接宿主机。需要端口映射 (<code>p</code>) 才能从外部访问容器服务。</li>
 <li><code>host</code>: 容器共享宿主机的网络栈。容器直接使用宿主机的 IP 地址和端口，无需端口映射。性能最好，但隔离性差。</li>
 <li><code>none</code>: 容器没有网络连接。</li>
 </ul>
 </li>
-<li><p><strong>为什么 <code>host</code> 对 SLAM&#x2F;ROS 重要？</strong> ROS 节点间通信、RViz 连接 ROS Master、与连接到宿主机的传感器（如网络摄像头）通信等，使用 <code>--net=host</code> 可以极大简化网络配置，让容器内的 ROS 环境像直接在宿主机运行一样方便。</p>
+<li>
+<p><strong>为什么 <code>host</code> 对 SLAM/ROS 重要？</strong> ROS 节点间通信、RViz 连接 ROS Master、与连接到宿主机的传感器（如网络摄像头）通信等，使用 <code>--net=host</code> 可以极大简化网络配置，让容器内的 ROS 环境像直接在宿主机运行一样方便。</p>
 </li>
-<li><p><strong>示例:</strong></p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用 host 网络模式运行容器</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> --net=host ubuntu:20.04 bash</span><br><span class="line"><span class="comment"># 在容器内运行 ifconfig，你会看到宿主机的网络接口</span></span><br><span class="line"><span class="comment"># 在容器内运行的 ROS 节点可以直接与宿主机或其他局域网内的 ROS 节点通信</span></span><br></pre></td></tr></table></figure></li>
+<li>
+<p><strong>示例:</strong></p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用 host 网络模式运行容器</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> --net=host ubuntu:20.04 bash</span><br><span class="line"><span class="comment"># 在容器内运行 ifconfig，你会看到宿主机的网络接口</span></span><br><span class="line"><span class="comment"># 在容器内运行的 ROS 节点可以直接与宿主机或其他局域网内的 ROS 节点通信</span></span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
-<li><p><strong><code>-e</code> 或 <code>--env</code> (环境变量)</strong></p>
+<li>
+<p><strong><code>-e</code> 或 <code>--env</code> (环境变量)</strong></p>
 <ul>
-<li><p>设置容器内的环境变量。格式：<code>-e KEY=VALUE</code>。</p>
+<li>
+<p>设置容器内的环境变量。格式：<code>-e KEY=VALUE</code>。</p>
 </li>
-<li><p><strong>为什么对 SLAM 重要？</strong></p>
+<li>
+<p><strong>为什么对 SLAM 重要？</strong></p>
 <ul>
 <li><strong>ROS 配置:</strong> 设置 <code>ROS_MASTER_URI</code>, <code>ROS_IP</code>, <code>ROS_HOSTNAME</code> 等。</li>
 <li><strong>显示转发 (X11 Forwarding):</strong> 让容器内的 GUI 程序（如 RViz, Gazebo, rqt_plot）能显示在宿主机的屏幕上。通常需要设置 <code>DISPLAY</code> 环境变量。</li>
 </ul>
 </li>
-<li><p>**示例 (X11 Forwarding):**<em>注意:</em> X11 Forwarding 配置有时比较棘手，可能因系统而异。<code>-net=host</code> 通常能简化这个问题。</p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在宿主机先执行 xhost +local:docker (允许本地 docker 容器连接 X server)</span></span><br><span class="line">xhost +<span class="built_in">local</span>:docker</span><br><span class="line"><span class="comment"># 运行容器时传递 DISPLAY 环境变量，并挂载 X11 socket</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> \</span><br><span class="line">       -e DISPLAY=<span class="variable">$DISPLAY</span> \</span><br><span class="line">       -v /tmp/.X11-unix:/tmp/.X11-unix \</span><br><span class="line">       --net=host \</span><br><span class="line">       ubuntu:20.04 bash</span><br><span class="line"><span class="comment"># 在容器内安装并运行一个简单的 GUI 程序试试，比如 xeyes (apt update &amp;&amp; apt install -y x11-apps &amp;&amp; xeyes)</span></span><br></pre></td></tr></table></figure></li>
+<li>
+<p>**示例 (X11 Forwarding)😗*<em>注意:</em> X11 Forwarding 配置有时比较棘手，可能因系统而异。<code>-net=host</code> 通常能简化这个问题。</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在宿主机先执行 xhost +local:docker (允许本地 docker 容器连接 X server)</span></span><br><span class="line">xhost +<span class="built_in">local</span>:docker</span><br><span class="line"><span class="comment"># 运行容器时传递 DISPLAY 环境变量，并挂载 X11 socket</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> \</span><br><span class="line">       -e DISPLAY=<span class="variable">$DISPLAY</span> \</span><br><span class="line">       -v /tmp/.X11-unix:/tmp/.X11-unix \</span><br><span class="line">       --net=host \</span><br><span class="line">       ubuntu:20.04 bash</span><br><span class="line"><span class="comment"># 在容器内安装并运行一个简单的 GUI 程序试试，比如 xeyes (apt update &amp;&amp; apt install -y x11-apps &amp;&amp; xeyes)</span></span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
-<li><p><strong><code>--device</code> (挂载设备)</strong></p>
+<li>
+<p><strong><code>--device</code> (挂载设备)</strong></p>
 <ul>
-<li><p>将宿主机的设备文件挂载到容器内。</p>
+<li>
+<p>将宿主机的设备文件挂载到容器内。</p>
 </li>
-<li><p><strong>为什么对 SLAM 重要？</strong> SLAM 严重依赖传感器！你需要让容器访问连接到宿主机的摄像头、IMU、LiDAR 等设备。</p>
+<li>
+<p><strong>为什么对 SLAM 重要？</strong> SLAM 严重依赖传感器！你需要让容器访问连接到宿主机的摄像头、IMU、LiDAR 等设备。</p>
 </li>
-<li><p>**示例:**<em>注意:</em> 确保运行 Docker 的用户在宿主机上对这些设备文件有读写权限（通常需要将用户添加到 <code>video</code>, <code>dialout</code> 等用户组）。</p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 挂载第一个 USB 摄像头 (/dev/video0)</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> --device=/dev/video0 ubuntu:20.04 bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># 挂载串口设备 (例如 IMU)</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> --device=/dev/ttyUSB0 ubuntu:20.04 bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># 挂载多个设备</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> --device=/dev/video0 --device=/dev/ttyUSB0 ubuntu:20.04 bash</span><br></pre></td></tr></table></figure></li>
+<li>
+<p>**示例:**<em>注意:</em> 确保运行 Docker 的用户在宿主机上对这些设备文件有读写权限（通常需要将用户添加到 <code>video</code>, <code>dialout</code> 等用户组）。</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 挂载第一个 USB 摄像头 (/dev/video0)</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> --device=/dev/video0 ubuntu:20.04 bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># 挂载串口设备 (例如 IMU)</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> --device=/dev/ttyUSB0 ubuntu:20.04 bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># 挂载多个设备</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> --device=/dev/video0 --device=/dev/ttyUSB0 ubuntu:20.04 bash</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
-<li><p><strong><code>--gpus</code> (GPU 支持)</strong></p>
+<li>
+<p><strong><code>--gpus</code> (GPU 支持)</strong></p>
 <ul>
 <li>允许容器访问宿主机的 NVIDIA GPU。这对需要 CUDA 加速的 SLAM 算法（如基于深度学习的特征提取、GPU 加速的优化）至关重要。</li>
 <li><strong>前提:</strong> 宿主机需要安装 NVIDIA 驱动和 <code>nvidia-docker2</code> (或称为 NVIDIA Container Toolkit)。</li>
 <li><strong>示例:</strong></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 允许容器访问所有可用的 GPU</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> --gpus all nvidia/cuda:11.4.0-base-ubuntu20.04 nvidia-smi</span><br><span class="line"><span class="comment"># 上例使用了 NVIDIA 官方提供的包含 CUDA 的基础镜像，并运行 nvidia-smi 检查 GPU 是否可用</span></span><br><span class="line"><span class="comment"># 你也可以在你自己的 ubuntu:20.04 镜像基础上，在容器内安装 CUDA Toolkit，然后用 --gpus all 启动</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> --gpus all ubuntu:20.04 bash</span><br><span class="line"><span class="comment"># (进入容器后需要自行安装 CUDA 和相关驱动)</span></span><br></pre></td></tr></table></figure></li>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 允许容器访问所有可用的 GPU</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> --gpus all nvidia/cuda:11.4.0-base-ubuntu20.04 nvidia-smi</span><br><span class="line"><span class="comment"># 上例使用了 NVIDIA 官方提供的包含 CUDA 的基础镜像，并运行 nvidia-smi 检查 GPU 是否可用</span></span><br><span class="line"><span class="comment"># 你也可以在你自己的 ubuntu:20.04 镜像基础上，在容器内安装 CUDA Toolkit，然后用 --gpus all 启动</span></span><br><span class="line">docker run -it --<span class="built_in">rm</span> --gpus all ubuntu:20.04 bash</span><br><span class="line"><span class="comment"># (进入容器后需要自行安装 CUDA 和相关驱动)</span></span><br></pre></td></tr></table></figure>
+</li>
 </ol>
 </li>
 </ul>
@@ -345,7 +409,8 @@ btf.addGlobalFn('pjaxComplete', () => {
 <ul>
 <li><strong>作用:</strong> 列出正在运行的容器。</li>
 <li><strong>语法:</strong> <code>docker ps</code></li>
-<li><strong>查看所有容器 (包括已停止的):</strong><ul>
+<li><strong>查看所有容器 (包括已停止的):</strong>
+<ul>
 <li><strong>语法:</strong> <code>docker ps -a</code></li>
 </ul>
 </li>
@@ -354,36 +419,44 @@ btf.addGlobalFn('pjaxComplete', () => {
 <ul>
 <li><strong>作用:</strong> 在一个已经在后台运行的容器内部执行命令。</li>
 <li><strong>语法:</strong> <code>docker exec [OPTIONS] CONTAINER COMMAND [ARG...]</code></li>
-<li><strong>常用选项:</strong><ul>
+<li><strong>常用选项:</strong>
+<ul>
 <li><code>-i</code>, <code>-t</code>: 与 <code>docker run</code> 中的含义相同，通常一起使用 (<code>-it</code>) 来获取交互式 Shell。</li>
 </ul>
 </li>
-<li><strong>示例:</strong><ul>
-<li><p>进入我们之前后台运行的 <code>my-nginx</code> 容器，并启动一个 bash shell:执行后你将进入 <code>my-nginx</code> 容器的 Shell。输入 <code>exit</code> 退出该 Shell，但容器本身仍在后台运行。</p>
-  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it my-nginx bash</span><br></pre></td></tr></table></figure></li>
+<li><strong>示例:</strong>
+<ul>
+<li>
+<p>进入我们之前后台运行的 <code>my-nginx</code> 容器，并启动一个 bash shell:执行后你将进入 <code>my-nginx</code> 容器的 Shell。输入 <code>exit</code> 退出该 Shell，但容器本身仍在后台运行。</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it my-nginx bash</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
 <p><strong>6. 管理容器 (停止、启动、删除)</strong></p>
 <ul>
-<li><strong>停止容器:</strong><ul>
+<li><strong>停止容器:</strong>
+<ul>
 <li><strong>语法:</strong> <code>docker stop &lt;容器ID或名称&gt;</code></li>
 <li><strong>示例:</strong> <code>docker stop my-nginx</code></li>
 </ul>
 </li>
-<li><strong>启动已停止的容器:</strong><ul>
+<li><strong>启动已停止的容器:</strong>
+<ul>
 <li><strong>语法:</strong> <code>docker start &lt;容器ID或名称&gt;</code></li>
 <li><strong>示例:</strong> <code>docker start my-nginx</code> (容器会继续在后台运行)</li>
 </ul>
 </li>
-<li><strong>删除容器:</strong><ul>
+<li><strong>删除容器:</strong>
+<ul>
 <li><strong>注意:</strong> 只能删除已停止的容器。</li>
 <li><strong>语法:</strong> <code>docker rm &lt;容器ID或名称&gt;</code></li>
 <li><strong>示例:</strong> (先停止) <code>docker stop my-nginx</code> (再删除) <code>docker rm my-nginx</code></li>
 <li><strong>强制删除运行中的容器 (不推荐，除非你知道后果):</strong> <code>docker rm -f &lt;容器ID或名称&gt;</code></li>
 </ul>
 </li>
-<li><strong>清理所有已停止的容器:</strong><ul>
+<li><strong>清理所有已停止的容器:</strong>
+<ul>
 <li><strong>语法:</strong> <code>docker container prune</code> (会提示确认)</li>
 </ul>
 </li>
@@ -393,38 +466,41 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li><strong>作用:</strong> 删除本地的一个或多个镜像。</li>
 <li><strong>注意:</strong> 如果有容器 (即使是已停止的) 正在使用该镜像，需要先删除这些容器才能删除镜像。</li>
 <li><strong>语法:</strong> <code>docker rmi &lt;镜像ID或仓库名:标签&gt;</code></li>
-<li><strong>示例:</strong><ul>
+<li><strong>示例:</strong>
+<ul>
 <li>删除 <code>hello-world</code> 镜像: <code>docker rmi hello-world:latest</code></li>
 <li>删除 <code>ubuntu:22.04</code> 镜像 (如果之前没有基于它创建并保留的容器): <code>docker rmi ubuntu:22.04</code></li>
 </ul>
 </li>
-<li><strong>清理悬空镜像 (dangling images):</strong> 这些是没有标签且没有被任何容器使用的镜像层，通常是构建过程中产生的中间层或旧版本。<ul>
+<li><strong>清理悬空镜像 (dangling images):</strong> 这些是没有标签且没有被任何容器使用的镜像层，通常是构建过程中产生的中间层或旧版本。
+<ul>
 <li><strong>语法:</strong> <code>docker image prune</code></li>
 </ul>
 </li>
 </ul>
-<h2 id="我自己的实例"><a href="#我自己的实例" class="headerlink" title="我自己的实例"></a>我自己的实例</h2><h3 id="1-需要用gpu的话先配置gpu"><a href="#1-需要用gpu的话先配置gpu" class="headerlink" title="1. 需要用gpu的话先配置gpu"></a>1. 需要用gpu的话先配置gpu</h3><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/GritYearner/article/details/133679403">https://blog.csdn.net/GritYearner/article/details/133679403</a></p>
+<h2 id="我自己的实例"><a class="markdownIt-Anchor" href="#我自己的实例"></a> 我自己的实例</h2>
+<h3 id="1-需要用gpu的话先配置gpu"><a class="markdownIt-Anchor" href="#1-需要用gpu的话先配置gpu"></a> 1. 需要用gpu的话先配置gpu</h3>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/GritYearner/article/details/133679403">https://blog.csdn.net/GritYearner/article/details/133679403</a></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | <span class="built_in">sudo</span> gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \</span><br><span class="line">  &amp;&amp; curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \</span><br><span class="line">    sed <span class="string">&#x27;s#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g&#x27;</span> | \</span><br><span class="line">    <span class="built_in">sudo</span> <span class="built_in">tee</span> /etc/apt/sources.list.d/nvidia-container-toolkit.list \</span><br><span class="line">  &amp;&amp; \</span><br><span class="line">    <span class="built_in">sudo</span> apt-get update</span><br><span class="line"><span class="built_in">sudo</span> apt-get install -y nvidia-docker2</span><br><span class="line"><span class="built_in">sudo</span> nvidia-ctk runtime configure --runtime=docker</span><br><span class="line"><span class="built_in">sudo</span> systemctl restart docker</span><br><span class="line">测试</span><br><span class="line"><span class="built_in">sudo</span> docker run --<span class="built_in">rm</span> --gpus all nvidia/cuda:11.0.3-base-ubuntu20.04 nvidia-smi</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h3 id="2-利用鱼香ros的镜像启动一个容器"><a href="#2-利用鱼香ros的镜像启动一个容器" class="headerlink" title="2. 利用鱼香ros的镜像启动一个容器"></a>2. 利用鱼香ros的镜像启动一个容器</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> docker run -dit \</span><br><span class="line">--gpus all \</span><br><span class="line">-e NVIDIA_DRIVER_CAPABILITIES=all \</span><br><span class="line">--name=[your_container_name] \</span><br><span class="line">--privileged  \</span><br><span class="line">-v /dev:/dev \</span><br><span class="line">-v /home/[your_username]:/home/[your_username] \</span><br><span class="line">-v /tmp/.X11-unix:/tmp/.X11-unix  \</span><br><span class="line">-e DISPLAY=unix<span class="variable">$DISPLAY</span> \</span><br><span class="line">-w /home/[your_username] \</span><br><span class="line">--net=host \</span><br><span class="line">fishros2/ros:noetic-desktop-full </span><br></pre></td></tr></table></figure>
-
+<h3 id="2-利用鱼香ros的镜像启动一个容器"><a class="markdownIt-Anchor" href="#2-利用鱼香ros的镜像启动一个容器"></a> 2. 利用鱼香ros的镜像启动一个容器</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> docker run -dit \</span><br><span class="line">--gpus all \</span><br><span class="line">-e NVIDIA_DRIVER_CAPABILITIES=all \</span><br><span class="line">--name=[your_container_name] \</span><br><span class="line">--privileged  \</span><br><span class="line">-v /dev:/dev \</span><br><span class="line">-v /home/[your_username]:/home/[your_username] \</span><br><span class="line">-v /tmp/.X11-unix:/tmp/.X11-unix  \</span><br><span class="line">-e DISPLAY=unix<span class="variable">$DISPLAY</span> \</span><br><span class="line">-w /home/[your_username] \</span><br><span class="line">--net=host \</span><br><span class="line">fishros2/ros:noetic-desktop-full </span><br></pre></td></tr></table></figure>
 <p>这里注意不要直接使用鱼香的容器，他的默认的启动跟这个不太一样。启动时候的这些指令一旦运行，就不能再改了，最好是删除容器重新从镜像用正确指令生成一个容器，实在不想放弃这个容器的话就通过将这个容器生成为新的镜像，再从新镜像用正确指令生成容器</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker commit 容器名 新镜像名:标签</span><br></pre></td></tr></table></figure>
-
 <p>要使用图形界面需要在外面终端运行</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这是鱼香ros默认运行的</span></span><br><span class="line">xhost +<span class="built_in">local</span>: &gt;&gt; /dev/null</span><br><span class="line"><span class="comment"># 这是gpt推荐的</span></span><br><span class="line">xhost +<span class="built_in">local</span>:docker</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-已经装好了ORB-SLAM3和ROS的镜像"><a href="#3-已经装好了ORB-SLAM3和ROS的镜像" class="headerlink" title="3. 已经装好了ORB-SLAM3和ROS的镜像"></a>3. 已经装好了ORB-SLAM3和ROS的镜像</h3><p>我通过之前的鱼香镜像生成容器配置好orbslam3自己做了一个镜像上传到了dockerhub</p>
+<h3 id="3-已经装好了orb-slam3和ros的镜像"><a class="markdownIt-Anchor" href="#3-已经装好了orb-slam3和ros的镜像"></a> 3. 已经装好了ORB-SLAM3和ROS的镜像</h3>
+<p>我通过之前的鱼香镜像生成容器配置好orbslam3自己做了一个镜像上传到了dockerhub</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">docker login</span><br><span class="line">docker pull 用户名/仓库名:标签</span><br><span class="line"><span class="built_in">sudo</span> docker run -dit \</span><br><span class="line">--gpus all \</span><br><span class="line">-e NVIDIA_DRIVER_CAPABILITIES=all \</span><br><span class="line">--name=rosslam \</span><br><span class="line">--privileged  \</span><br><span class="line">-v /dev:/dev \</span><br><span class="line">-v /home/xfy/docker-ros:/home/rosslam/workspace \ //记得改这个挂载目录</span><br><span class="line">-v /tmp/.X11-unix:/tmp/.X11-unix  \</span><br><span class="line">-e DISPLAY=unix<span class="variable">$DISPLAY</span> \</span><br><span class="line">-w /home/rosslam \</span><br><span class="line">--net=host \</span><br><span class="line">xuefeiyang/fyslam:slam3WithRos</span><br></pre></td></tr></table></figure>
-
 <ol>
-<li><p><strong><code>sudo docker run</code></strong>:</p>
+<li>
+<p><strong><code>sudo docker run</code></strong>:</p>
 <ul>
 <li><code>sudo</code>: 以超级用户（root）权限执行后面的命令。运行 Docker 命令，特别是涉及硬件访问（如 GPU、设备挂载 <code>/dev</code>）或修改网络设置（<code>--net=host</code>）时，通常需要 <code>sudo</code> 权限。</li>
 <li><code>docker run</code>: 这是 Docker 的核心命令，用于根据指定的镜像创建一个新的容器并运行它。</li>
 </ul>
 </li>
-<li><p><strong><code>-dit</code></strong>: 这是三个选项的缩写合并：</p>
+<li>
+<p><strong><code>-dit</code></strong>: 这是三个选项的缩写合并：</p>
 <ul>
 <li><code>-d</code> (<code>--detach</code>): 让容器在后台运行（Detached mode）。执行此命令后，你会立即返回到宿主机的终端提示符，而不是直接进入容器的 Shell。容器会在后台保持运行状态。这对于运行需要长时间提供服务的容器（如 ROS Master、模拟器）很有用。</li>
 <li><code>-i</code> (<code>--interactive</code>): 保持标准输入（STDIN）对容器开放，即使没有连接到容器。这通常与 <code>-t</code> 一起使用，以便后续可以通过 <code>docker attach</code> 或 <code>docker exec</code> 进行交互。</li>
@@ -432,26 +508,30 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li><strong>组合效果</strong>: <code>-dit</code> 启动一个后台运行的容器，但保持其交互接口可用，方便你之后使用 <code>docker exec -it rosslam bash</code> 等命令进入容器内部进行操作。</li>
 </ul>
 </li>
-<li><p><strong><code>--gpus all</code></strong>:</p>
+<li>
+<p><strong><code>--gpus all</code></strong>:</p>
 <ul>
 <li>允许这个容器访问宿主机上所有可用的 NVIDIA GPU。</li>
 <li><strong>前提</strong>: 你的宿主机需要正确安装 NVIDIA 显卡驱动，并且安装了 NVIDIA Container Toolkit (nvidia-docker2)。</li>
 <li><strong>用途</strong>: 对于需要 CUDA 进行加速的 SLAM 算法（例如，基于深度学习的特征提取、GPU 加速的后端优化、仿真渲染等）至关重要。</li>
 </ul>
 </li>
-<li><p><strong><code>-e NVIDIA_DRIVER_CAPABILITIES=all</code></strong>:</p>
+<li>
+<p><strong><code>-e NVIDIA_DRIVER_CAPABILITIES=all</code></strong>:</p>
 <ul>
 <li><code>-e</code> (<code>--env</code>): 设置容器内部的环境变量。</li>
 <li><code>NVIDIA_DRIVER_CAPABILITIES=all</code>: 这个特定的环境变量告诉 NVIDIA 驱动程序，允许容器使用驱动程序的所有功能（如图形、计算、工具、视频编解码等）。通常与 <code>--gpus</code> 选项配合使用，以确保容器内应用能充分利用 GPU 能力。</li>
 </ul>
 </li>
-<li><p><strong><code>--name=rosslam</code></strong>:</p>
+<li>
+<p><strong><code>--name=rosslam</code></strong>:</p>
 <ul>
 <li>给这个新创建的容器指定一个名字，叫做 “rosslam”。</li>
 <li><strong>好处</strong>: 你可以使用这个名字来方便地管理容器，例如 <code>docker stop rosslam</code>、<code>docker start rosslam</code>、<code>docker logs rosslam</code>、<code>docker exec -it rosslam bash</code> 等，而不需要记住 Docker 自动生成的长 ID。</li>
 </ul>
 </li>
-<li><p><strong><code>--privileged</code></strong>:</p>
+<li>
+<p><strong><code>--privileged</code></strong>:</p>
 <ul>
 <li>赋予这个容器扩展的权限。这基本上禁用了容器和宿主机之间的大部分安全隔离机制。</li>
 <li><strong>效果</strong>: 容器几乎拥有与宿主机上 root 用户相同的权限，可以访问宿主机的所有设备（<code>/dev</code> 下的所有内容），修改内核参数等。</li>
@@ -459,14 +539,16 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li><strong>注意</strong>: 这是一个强大的选项，但<strong>有安全风险</strong>。如果可能，优先考虑使用更精细的 <code>--device</code> 选项来只挂载必要的设备，而不是使用 <code>--privileged</code>。但有时为了方便或解决特定权限问题会使用它。</li>
 </ul>
 </li>
-<li><p><strong><code>-v /dev:/dev</code></strong>:</p>
+<li>
+<p><strong><code>-v /dev:/dev</code></strong>:</p>
 <ul>
 <li><code>-v</code> (<code>--volume</code>): 将宿主机的目录或文件挂载到容器内部。这里是挂载宿主机的 <code>/dev</code> 目录到容器的 <code>/dev</code> 目录。</li>
 <li><strong>目的</strong>: 让容器可以直接访问宿主机上的所有硬件设备文件。这对于 SLAM 来说非常方便，因为你可以直接在容器内像在宿主机上一样使用 <code>/dev/video0</code>（摄像头）、<code>/dev/ttyUSB0</code>（串口设备如 IMU 或 LiDAR）等设备。</li>
 <li><strong>与 <code>--privileged</code> 的关系</strong>: 这个挂载让容器 <em>看到</em> 设备文件，而 <code>--privileged</code> 通常用来确保容器 <em>有权限</em> 去操作这些设备文件。</li>
 </ul>
 </li>
-<li><p><strong><code>-v /home/xfy/docker-ros:/home/rosslam/workspace</code></strong>:</p>
+<li>
+<p><strong><code>-v /home/xfy/docker-ros:/home/rosslam/workspace</code></strong>:</p>
 <ul>
 <li>这是另一个卷挂载。</li>
 <li><code>宿主机路径</code>: <code>/home/xfy/docker-ros</code> （<strong>这是你宿主机上的一个具体目录，其他人使用时需要修改成他们自己的路径！</strong>）</li>
@@ -474,13 +556,15 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li><strong>目的</strong>: 这是实现代码和数据共享的关键。你在宿主机的 <code>/home/xfy/docker-ros</code> 目录下修改代码、存放数据，这些内容会实时同步到容器内的 <code>/home/rosslam/workspace</code> 目录，反之亦然。这样你可以在宿主机使用你喜欢的编辑器，而在容器内编译和运行。容器删除后，这个目录下的工作成果依然保存在宿主机上。</li>
 </ul>
 </li>
-<li><p><strong><code>-v /tmp/.X11-unix:/tmp/.X11-unix</code></strong>:</p>
+<li>
+<p><strong><code>-v /tmp/.X11-unix:/tmp/.X11-unix</code></strong>:</p>
 <ul>
 <li>挂载宿主机的 X11 Unix Domain Socket 目录到容器内部对应的位置。</li>
 <li><strong>目的</strong>: 这是实现 X11 转发（让容器内的 GUI 程序显示在宿主机屏幕上）的关键步骤之一。GUI 程序通过这个 Socket 与宿主机的 X Server 通信。</li>
 </ul>
 </li>
-<li><p><strong><code>-e DISPLAY=unix$DISPLAY</code></strong>:</p>
+<li>
+<p><strong><code>-e DISPLAY=unix$DISPLAY</code></strong>:</p>
 <ul>
 <li>设置容器内的 <code>DISPLAY</code> 环境变量。</li>
 <li><code>$DISPLAY</code>: 这会取用你<strong>当前宿主机</strong>的 <code>DISPLAY</code> 环境变量的值（通常是 <code>:0</code> 或 <code>:1</code> 等）。</li>
@@ -489,71 +573,45 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li><strong>前提</strong>: 在运行这个 <code>docker run</code> 命令之前，你可能需要在宿主机上执行 <code>xhost +local:docker</code> （或者更安全的特定容器授权命令）来允许来自 Docker 容器的 X11 连接。</li>
 </ul>
 </li>
-<li><p><strong><code>-w /home/rosslam</code></strong>:</p>
+<li>
+<p><strong><code>-w /home/rosslam</code></strong>:</p>
 <ul>
 <li><code>-w</code> (<code>--workdir</code>): 指定容器启动后的默认工作目录。</li>
 <li><strong>效果</strong>: 当你使用 <code>docker exec -it rosslam bash</code> 进入容器时，你的 Shell 会话将直接从容器内的 <code>/home/rosslam</code> 目录开始，而不是默认的根目录 <code>/</code>。这通常是为了方便，让你直接进入项目相关的主目录。</li>
 </ul>
 </li>
-<li><p><strong><code>--net=host</code></strong>:</p>
+<li>
+<p><strong><code>--net=host</code></strong>:</p>
 <ul>
 <li>让容器共享宿主机的网络命名空间（Network Namespace）。</li>
 <li><strong>效果</strong>: 容器不会获得自己独立的 IP 地址，而是直接使用宿主机的网络接口和 IP 地址。容器内监听的端口会直接暴露在宿主机的对应端口上，无需使用 <code>-p</code> 进行端口映射。</li>
-<li><strong>对 ROS&#x2F;SLAM 的好处</strong>: 极大地简化了网络配置。容器内的 ROS 节点可以像在宿主机上运行一样，轻松地被局域网内（包括宿主机）的其他 ROS 节点发现和通信（例如 RViz 连接容器内的 ROS Master）。也方便访问连接到宿主机的网络摄像头等设备。</li>
+<li><strong>对 ROS/SLAM 的好处</strong>: 极大地简化了网络配置。容器内的 ROS 节点可以像在宿主机上运行一样，轻松地被局域网内（包括宿主机）的其他 ROS 节点发现和通信（例如 RViz 连接容器内的 ROS Master）。也方便访问连接到宿主机的网络摄像头等设备。</li>
 <li><strong>缺点</strong>: 降低了网络隔离性。</li>
 </ul>
 </li>
-<li><p><strong><code>xuefeiyang/fyslam:slam3WithRos</code></strong>:</p>
+<li>
+<p><strong><code>xuefeiyang/fyslam:slam3WithRos</code></strong>:</p>
 <ul>
 <li>这是用来创建容器的<strong>镜像</strong>（Image）。</li>
-<li><code>xuefeiyang/fyslam</code>: 镜像的仓库名&#x2F;用户名和镜像名，这看起来是一个用户（xuefeiyang）构建并可能分享在 Docker Hub 或私有仓库的自定义镜像。</li>
+<li><code>xuefeiyang/fyslam</code>: 镜像的仓库名/用户名和镜像名，这看起来是一个用户（xuefeiyang）构建并可能分享在 Docker Hub 或私有仓库的自定义镜像。</li>
 <li><code>slam3WithRos</code>: 镜像的标签（Tag），通常表示镜像的版本或者配置。这个名字暗示了这个镜像里面很可能已经预装了 ROS (Robot Operating System) 和一些 SLAM 相关的库或工具。</li>
 </ul>
 </li>
 </ol>
 <p><strong>总结</strong></p>
 <p>这个命令启动了一个名为 <code>rosslam</code> 的后台容器，该容器基于 <code>xuefeiyang/fyslam:slam3WithRos</code> 镜像。它被赋予了很高的权限 (<code>--privileged</code>)，可以直接访问宿主机的所有 GPU (<code>--gpus all</code>) 和所有设备 (<code>-v /dev:/dev</code>)，并且共享宿主机的网络 (<code>--net=host</code>)。它还设置了 GUI 转发 (<code>-v /tmp/.X11-unix</code>, <code>-e DISPLAY</code>)，并将宿主机的 <code>/home/xfy/docker-ros</code> 目录映射到容器的 <code>/home/rosslam/workspace</code> 以共享工作文件。容器启动后的默认工作目录是 <code>/home/rosslam</code>。</p>
-</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231459744.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/04/29/c10/" title="C++学习笔记—g2o库—ICP"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231452736.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">C++学习笔记—g2o库—ICP</div></div><div class="info-2"><div class="info-item-1">这个例子解决的是一个常见的 3D 重建或配准问题：我们有两组对应的三维点云（或者说，已知点之间的匹配关系），并且已经有了一个初始的、可能不太精确的相对位姿估计（旋转 R 和平移 t），我们希望通过优化来获得一个更精确的相对位姿。 与 Bundle Adjustment 的关键区别：  BA 通常处理的是 3D 点到 2D 图像点的投影关系。 这个例子处理的是 3D 点到 3D 点 的直接变换关系。 这个特定的例子只优化位姿，而不优化三维点的坐标 (尽管也可以扩展为同时优化点坐标)。  1. 问题描述假设我们有两组三维点：  pts1: 第一组三维点的坐标（在坐标系 1 中）。 pts2: 第二组三维点的坐标（在坐标系 2 中）。  我们知道 pts1[i] 和 pts2[i] 是对应的点。我们还有一个从坐标系 2 变换到坐标系 1 的初始位姿估计 $T_{12} &#x3D; (R, t)$。 目标是：优化位姿 $T_{12}$，使得将 pts2 中的每个点 $\mathbf{p}_{2,i}$ 通过优化后的位姿 $T_{12}$ 变换到坐标系 1 后，得到的结果...</div></div></div></a><a class="pagination-related" href="/2025/04/30/docker2/" title="docker常用命令"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231515297.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">docker常用命令</div></div><div class="info-2"><div class="info-item-1">镜像管理 (Image Management) docker image ls &#x2F; docker images: 查看镜像 docker search [image]: 检索镜像 eg. docker search nginx   docker pull [image]: 拉取镜像 docker push [image]: 上传镜像 eg. docker push geekhour/hello-docker:latest   docker save [image] -o FILE &#x2F; docker save [image] &gt; FILE: 保存镜像 eg. docker save geekhour/hello-docker:latest &gt; hello-docker.tar   docker load -i FILE: 导入镜像 eg. docker load -i hello-docker.tar   docker history [image]: 查看镜像历史 docker rmi [image] &#x2F; docker image rm...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-text">基本操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E8%87%AA%E5%B7%B1%E7%9A%84%E5%AE%9E%E4%BE%8B"><span class="toc-text">我自己的实例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%9C%80%E8%A6%81%E7%94%A8gpu%E7%9A%84%E8%AF%9D%E5%85%88%E9%85%8D%E7%BD%AEgpu"><span class="toc-text">1. 需要用gpu的话先配置gpu</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%88%A9%E7%94%A8%E9%B1%BC%E9%A6%99ros%E7%9A%84%E9%95%9C%E5%83%8F%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8"><span class="toc-text">2. 利用鱼香ros的镜像启动一个容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%B7%B2%E7%BB%8F%E8%A3%85%E5%A5%BD%E4%BA%86ORB-SLAM3%E5%92%8CROS%E7%9A%84%E9%95%9C%E5%83%8F"><span class="toc-text">3. 已经装好了ORB-SLAM3和ROS的镜像</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
-  const loadMathjax = () => {
-    if (!window.MathJax) {
-      window.MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']],
-          tags: 'none',
-        },
-        chtml: {
-          scale: 1.1
-        },
-        options: {
-          enableMenu: true,
-          renderActions: {
-            findScript: [10, doc => {
-              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
-                const display = !!node.type.match(/; *mode=display/)
-                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
-                const text = document.createTextNode('')
-                node.parentNode.replaceChild(text, node)
-                math.start = {node: text, delim: '', n: 0}
-                math.end = {node: text, delim: '', n: 0}
-                doc.math.push(math)
-              }
-            }, '']
-          }
-        }
-      }
+</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231459744.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/04/29/c10/" title="C++学习笔记—g2o库—ICP"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231452736.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">C++学习笔记—g2o库—ICP</div></div><div class="info-2"><div class="info-item-1">这个例子解决的是一个常见的 3D 重建或配准问题：我们有两组对应的三维点云（或者说，已知点之间的匹配关系），并且已经有了一个初始的、可能不太精确的相对位姿估计（旋转 R 和平移 t），我们希望通过优化来获得一个更精确的相对位姿。 与 Bundle Adjustment 的关键区别：  BA 通常处理的是 3D 点到 2D 图像点的投影关系。 这个例子处理的是 3D 点到 3D 点 的直接变换关系。 这个特定的例子只优化位姿，而不优化三维点的坐标 (尽管也可以扩展为同时优化点坐标)。   1. 问题描述 假设我们有两组三维点：  pts1: 第一组三维点的坐标（在坐标系 1 中）。 pts2: 第二组三维点的坐标（在坐标系 2 中）。  我们知道 pts1[i] 和 pts2[i] 是对应的点。我们还有一个从坐标系 2 变换到坐标系 1 的初始位姿估计 T_12=(R,t)T\_{12} = (R, t)T_12=(R,t)。 目标是：优化位姿 T_12T\_{12}T_12，使得将 pts2 中的每个点 p_2,i\mathbf{p}\_{2,i}p_2,i 通过优化后的位姿...</div></div></div></a><a class="pagination-related" href="/2025/04/30/docker2/" title="docker常用命令"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231515297.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">docker常用命令</div></div><div class="info-2"><div class="info-item-1"> 镜像管理 (Image Management)  docker image ls / docker images: 查看镜像 docker search [image]: 检索镜像  eg. docker search nginx   docker pull [image]: 拉取镜像 docker push [image]: 上传镜像  eg. docker push geekhour/hello-docker:latest   docker save [image] -o FILE / docker save [image] &gt; FILE: 保存镜像  eg. docker save geekhour/hello-docker:latest &gt; hello-docker.tar   docker load -i FILE: 导入镜像  eg. docker load -i hello-docker.tar   docker history [image]: 查看镜像历史 docker rmi [image] / docker image rm [image]:...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-text"> 基本操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E8%87%AA%E5%B7%B1%E7%9A%84%E5%AE%9E%E4%BE%8B"><span class="toc-text"> 我自己的实例</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%9C%80%E8%A6%81%E7%94%A8gpu%E7%9A%84%E8%AF%9D%E5%85%88%E9%85%8D%E7%BD%AEgpu"><span class="toc-text"> 1. 需要用gpu的话先配置gpu</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%88%A9%E7%94%A8%E9%B1%BC%E9%A6%99ros%E7%9A%84%E9%95%9C%E5%83%8F%E5%90%AF%E5%8A%A8%E4%B8%80%E4%B8%AA%E5%AE%B9%E5%99%A8"><span class="toc-text"> 2. 利用鱼香ros的镜像启动一个容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%B7%B2%E7%BB%8F%E8%A3%85%E5%A5%BD%E4%BA%86orb-slam3%E5%92%8Cros%E7%9A%84%E9%95%9C%E5%83%8F"><span class="toc-text"> 3. 已经装好了ORB-SLAM3和ROS的镜像</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(async () => {
+  const showKatex = () => {
+    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
+  }
 
-      const script = document.createElement('script')
-      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
-      script.id = 'MathJax-script'
-      script.async = true
-      document.head.appendChild(script)
-    } else {
-      MathJax.startup.document.state(0)
-      MathJax.texReset()
-      MathJax.typesetPromise()
+  if (!window.katex_js_css) {
+    window.katex_js_css = true
+    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css')
+    if (false) {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js')
     }
   }
 
-  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
-  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+  showKatex()
 })()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

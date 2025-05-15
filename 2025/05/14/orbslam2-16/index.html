@@ -1,0 +1,394 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>优化——全局优化 | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Global Optimization  一、全局优化的目标与核心思想 在视觉惯性SLAM (Simultaneous Localization and Mapping) 系统中，全局优化 (Global Bundle Adjustment, GBA) 是一个至关重要的后端优化步骤。其核心目标是优化系统中所有关键帧的位姿（位置和姿态）以及所有三维地图点（Map Points）的空间坐标。通过这一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="优化——全局优化">
+<meta property="og:url" content="https://feiyblog.netlify.app/2025/05/14/orbslam2-16/index.html">
+<meta property="og:site_name" content="我的学习笔记">
+<meta property="og:description" content="Global Optimization  一、全局优化的目标与核心思想 在视觉惯性SLAM (Simultaneous Localization and Mapping) 系统中，全局优化 (Global Bundle Adjustment, GBA) 是一个至关重要的后端优化步骤。其核心目标是优化系统中所有关键帧的位姿（位置和姿态）以及所有三维地图点（Map Points）的空间坐标。通过这一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231608640.png">
+<meta property="article:published_time" content="2025-05-14T06:31:42.000Z">
+<meta property="article:modified_time" content="2025-05-14T06:32:14.869Z">
+<meta property="article:author" content="Xue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231608640.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "优化——全局优化",
+  "url": "https://feiyblog.netlify.app/2025/05/14/orbslam2-16/",
+  "image": "https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231608640.png",
+  "datePublished": "2025-05-14T06:31:42.000Z",
+  "dateModified": "2025-05-14T06:32:14.869Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Xue",
+      "url": "https://feiyblog.netlify.app/"
+    }
+  ]
+}</script><link rel="shortcut icon" href="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250424131237614.png"><link rel="canonical" href="https://feiyblog.netlify.app/2025/05/14/orbslam2-16/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?568315545f51aa0aac415d8a71f8bd8f";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '优化——全局优化',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231608640.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">优化——全局优化</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">优化——全局优化</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-14T06:31:42.000Z" title="发表于 2025-05-14 14:31:42">2025-05-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-14T06:32:14.869Z" title="更新于 2025-05-14 14:32:14">2025-05-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/SLAM/">SLAM</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="global-optimization"><a class="markdownIt-Anchor" href="#global-optimization"></a> Global Optimization</h1>
+<h2 id="一-全局优化的目标与核心思想"><a class="markdownIt-Anchor" href="#一-全局优化的目标与核心思想"></a> 一、全局优化的目标与核心思想</h2>
+<p>在视觉惯性SLAM (Simultaneous Localization and Mapping) 系统中，<strong>全局优化 (Global Bundle Adjustment, GBA)</strong> 是一个至关重要的后端优化步骤。其核心目标是<strong>优化系统中所有关键帧的位姿（位置和姿态）以及所有三维地图点（Map Points）的空间坐标</strong>。通过这一过程，可以显著减少由于传感器噪声、运动估计误差和匹配不确定性等因素造成的累积漂移，从而构建一个全局一致且高精度的地图，并提升相机自身的定位精度。</p>
+<p><strong>核心思想：捆绑调整 (Bundle Adjustment, BA)</strong></p>
+<p>全局优化的数学实质是执行一次大规模的捆绑调整。这个名字形象地描述了其工作原理：想象场景中的三维点通过光线（bundles of rays）投影到不同时刻相机捕获的图像上。BA的目标就是通过微调每一个关键帧的位姿和每一个三维地图点的位置，使得这些三维点在各个观测到它的关键帧图像上的<strong>重投影误差 (Reprojection Error)</strong> 之和最小。重投影误差指的是观测到的图像特征点位置与根据当前估计的相机位姿和三维点位置计算得到的理论投影位置之间的差异。</p>
+<p>与局部建图线程中进行的<strong>局部捆绑调整 (Local Bundle Adjustment)</strong> 相比，全局优化考虑的是整个SLAM过程中积累下来的<strong>所有</strong>关键帧和地图点，因此计算量更大，但对全局一致性的提升也更为显著。</p>
+<h2 id="二-全局优化的关键元素顶点与边基于图优化框架-g2o"><a class="markdownIt-Anchor" href="#二-全局优化的关键元素顶点与边基于图优化框架-g2o"></a> 二、全局优化的关键元素：顶点与边（基于图优化框架 G2O）</h2>
+<p>全局优化问题通常被构建为一个图（Graph），其中节点（顶点）代表待优化的变量，边代表这些变量之间的约束关系。开源图优化库g2o是ORB-SLAM2中实现BA的核心工具。</p>
+<h3 id="1-顶点-vertices"><a class="markdownIt-Anchor" href="#1-顶点-vertices"></a> 1. 顶点 (Vertices)</h3>
+<p>顶点代表了需要优化的参数。在全局BA中，主要有两类顶点：</p>
+<ul>
+<li><strong>关键帧位姿 (KeyFrame Poses):</strong>
+<ul>
+<li>表示相机在采集每个关键帧时相对于世界坐标系的六自由度位姿（3个平移，3个旋转）。</li>
+<li>在g2o中，通常使用 <code>g2o::VertexSE3Expmap</code> 类型来表示。SE(3)代表三维刚体变换（旋转和平移），Expmap是李代数到李群的一种映射方式。</li>
+<li><strong>参考基准:</strong> 为了避免整个系统的位姿发生整体漂移（即所谓的“无约束自由度”），必须固定一个参考。通常，<strong>系统中的第一个关键帧（索引为0的关键帧）的位姿被设为固定 (fixed)，不参与优化</strong>。所有其他关键帧的位姿和地图点都将相对于这个固定的参考系进行调整。</li>
+</ul>
+</li>
+<li><strong>地图点 (Map Points):</strong>
+<ul>
+<li>表示场景中稳定的三维特征点的世界坐标 (x, y, z)。</li>
+<li>在g2o中，通常使用 <code>g2o::VertexSBAPointXYZ</code> 类型来表示。SBA代表稀疏捆绑调整 (Sparse Bundle Adjustment)。</li>
+<li>这些顶点代表了地图的几何结构。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-边-edges"><a class="markdownIt-Anchor" href="#2-边-edges"></a> 2. 边 (Edges)</h3>
+<p>边代表了顶点之间的约束关系，即观测模型。在全局BA中，主要的边是连接地图点和观测到该地图点的关键帧之间的<strong>投影关系</strong>。</p>
+<ul>
+<li><strong>二元边 (Binary Edges):</strong> 因为一条边连接了两个顶点（一个地图点顶点和一个关键帧位姿顶点）。</li>
+<li><strong>误差定义:</strong> 边的核心是定义一个误差项，即前面提到的重投影误差。</li>
+<li><strong>边的类型根据相机模型而不同:</strong>
+<ul>
+<li><strong>单目相机 (Monocular Camera):</strong>
+<ul>
+<li>使用 <code>g2o::EdgeSE3ProjectXYZ</code> 类型的边。</li>
+<li>这种边约束的是一个三维地图点在给定相机位姿和相机内参的情况下，投影到该关键帧图像上的二维像素坐标。误差是二维向量 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>e</mi><mi>u</mi></msub><mo separator="true">,</mo><msub><mi>e</mi><mi>v</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(e_u, e_v)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">u</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">v</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>。</li>
+</ul>
+</li>
+<li><strong>双目相机 (Stereo Camera) 或 RGB-D 相机:</strong>
+<ul>
+<li>使用 <code>g2o::EdgeStereoSE3ProjectXYZ</code> 类型的边。</li>
+<li>对于双目相机，除了二维像素坐标 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>u</mi><mi>L</mi></msub><mo separator="true">,</mo><msub><mi>v</mi><mi>L</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(u_L, v_L)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">L</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">L</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> 外，还会利用左右目图像的视差信息来约束点的深度，或者直接约束其在右图像中的 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>u</mi><mi>R</mi></msub></mrow><annotation encoding="application/x-tex">u_R</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.00773em;">R</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 坐标。因此，误差通常是三维的 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>e</mi><mrow><mi>u</mi><mi>L</mi></mrow></msub><mo separator="true">,</mo><msub><mi>e</mi><mrow><mi>v</mi><mi>L</mi></mrow></msub><mo separator="true">,</mo><msub><mi>e</mi><mrow><mi>u</mi><mi>R</mi></mrow></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(e_{uL}, e_{vL}, e_{uR})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">v</span><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight" style="margin-right:0.00773em;">R</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> 或 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>e</mi><mrow><mi>u</mi><mi>L</mi></mrow></msub><mo separator="true">,</mo><msub><mi>e</mi><mrow><mi>v</mi><mi>L</mi></mrow></msub><mo separator="true">,</mo><msub><mi>e</mi><mrow><mi>d</mi><mi>e</mi><mi>p</mi><mi>t</mi><mi>h</mi></mrow></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(e_{uL}, e_{vL}, e_{depth})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.036108em;vertical-align:-0.286108em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">v</span><span class="mord mathnormal mtight">L</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight">h</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>。</li>
+<li>对于RGB-D相机，可以直接获取深度信息，因此约束也是三维的。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>书中强调，全局优化中顶点和边的类型定义与局部地图优化函数 (LocalBundleAdjustment) 中的是相同的，误差类型也一致。主要的区别在于全局优化作用于<strong>全局地图</strong>，而局部优化作用于<strong>局部地图</strong>。</p>
+<h2 id="三-全局优化的详细流程"><a class="markdownIt-Anchor" href="#三-全局优化的详细流程"></a> 三、全局优化的详细流程</h2>
+<p>ORB-SLAM2中的全局优化函数 <code>GlobalBundleAdjustemnt</code> (在 <code>Optimizer::BundleAdjustment</code> 函数中实现主体逻辑) 主要遵循以下步骤：</p>
+<h3 id="第1步初始化g2o优化器"><a class="markdownIt-Anchor" href="#第1步初始化g2o优化器"></a> 第1步：初始化g2o优化器</h3>
+<p>这是进行图优化的准备工作，配置优化求解的框架。</p>
+<ul>
+<li><strong>创建稀疏优化器对象:</strong>
+<ul>
+<li>例如 <code>g2o::SparseOptimizer optimizer;</code></li>
+</ul>
+</li>
+<li><strong>选择并配置求解器 (Solver):</strong>
+<ul>
+<li>优化问题通常是非线性的最小二乘问题。求解这类问题需要迭代计算，每一步迭代通常涉及求解一个线性方程组 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mi mathvariant="normal">Δ</mi><mi>x</mi><mo>=</mo><mo>−</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">H \Delta x = -b</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mord">Δ</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord">−</span><span class="mord mathnormal">b</span></span></span></span>。</li>
+<li><strong>线性求解器 (Linear Solver):</strong> 负责求解这个线性方程组。常见的选择是基于Cholesky分解或QR分解的求解器，如 <code>g2o::LinearSolverEigen&lt;g2o::BlockSolver_6_3::PoseMatrixType&gt;()</code>，这里使用了Eigen库进行矩阵运算。</li>
+<li><strong>块求解器 (Block Solver):</strong> 封装了线性求解器，并定义了H矩阵的块结构。这里的 <code>g2o::BlockSolver_6_3</code> 表示H矩阵中，与相机位姿相关的块是 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>6</mn><mo>×</mo><mn>6</mn></mrow><annotation encoding="application/x-tex">6 \times 6</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">6</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">6</span></span></span></span>（SE3位姿有6个自由度），与地图点相关的块是 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">3 \times 3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">3</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">3</span></span></span></span>（三维点有3个自由度）。</li>
+</ul>
+</li>
+<li><strong>选择优化算法 (Optimization Algorithm):</strong>
+<ul>
+<li>指定了如何进行迭代下降。常用的有高斯-牛顿法 (Gauss-Newton) 或莱文贝格-马夸特法 (Levenberg-Marquardt, LM)。</li>
+<li>书中代码示例使用了 <code>g2o::OptimizationAlgorithmLevenberg</code>。LM算法结合了高斯-牛顿法和梯度下降法的优点，具有较好的鲁棒性。</li>
+</ul>
+</li>
+<li><strong>设置优化器算法:</strong>
+<ul>
+<li><code>optimizer.setAlgorithm(solver);</code></li>
+</ul>
+</li>
+<li><strong>外部停止标志 (Optional):</strong>
+<ul>
+<li><code>optimizer.setForceStopFlag(pbStopFlag);</code> 允许从外部提前终止优化过程。</li>
+</ul>
+</li>
+</ul>
+<h3 id="第2步向优化器中添加顶点"><a class="markdownIt-Anchor" href="#第2步向优化器中添加顶点"></a> 第2步：向优化器中添加顶点</h3>
+<p>将所有待优化的关键帧位姿和地图点作为顶点加入到优化器中。</p>
+<ul>
+<li><strong>Step 2.1: 添加关键帧位姿作为顶点:</strong>
+<ul>
+<li>遍历当前地图中所有的有效关键帧 ( <code>vpKFs</code> )。</li>
+<li>对每个未标记为 <code>isBad()</code> 的关键帧 <code>pKF</code>：
+<ul>
+<li>创建一个 <code>g2o::VertexSE3Expmap</code> 对象: <code>vSE3 = new g2o::VertexSE3Expmap();</code></li>
+<li><strong>设置初始估计值:</strong> 将关键帧当前的位姿 <code>pKF-&gt;GetPose()</code> 转换为g2o的SE3Quat格式，并设置为顶点的初始估计 <code>vSE3-&gt;setEstimate(Converter::toSE3Quat(pKF-&gt;GetPose()));</code>。</li>
+<li><strong>设置顶点ID:</strong> <code>vSE3-&gt;setId(pKF-&gt;mnId);</code> 使用关键帧自身的ID作为顶点的ID。</li>
+<li><strong>固定参考帧:</strong> 如果是第0帧 (<code>pKF-&gt;mnId == 0</code>)，则将其固定 <code>vSE3-&gt;setFixed(true);</code>。</li>
+<li>将顶点添加到优化器: <code>optimizer.addVertex(vSE3);</code></li>
+<li>记录已添加的关键帧的最大ID <code>maxKFid</code>，用于后续地图点顶点ID的设置。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>Step 2.2: 添加地图点作为顶点:</strong>
+<ul>
+<li>遍历当前地图中所有的有效地图点 ( <code>vpMP</code> )。</li>
+<li>对每个未标记为 <code>isBad()</code> 的地图点 <code>pMP</code>：
+<ul>
+<li>创建一个 <code>g2o::VertexSBAPointXYZ</code> 对象: <code>vPoint = new g2o::VertexSBAPointXYZ();</code></li>
+<li><strong>设置初始估计值:</strong> 将地图点当前的世界坐标 <code>pMP-&gt;GetWorldPos()</code> 转换为g2o的Vector3d格式，并设置为顶点的初始估计 <code>vPoint-&gt;setEstimate(Converter::toVector3d(pMP-&gt;GetWorldPos()));</code>。</li>
+<li><strong>设置顶点ID:</strong> 为了避免与关键帧顶点的ID冲突，地图点顶点的ID通常设置为 <code>pMP-&gt;mnId + maxKFid + 1;</code>。</li>
+<li><strong>边缘化/舒尔消元 (Marginalization):</strong> <code>vPoint-&gt;setMarginalized(true);</code> 这是一个非常重要的步骤。在BA问题中，地图点的数量通常远大于相机位姿的数量。通过将地图点顶点设置为边缘化，可以在求解线性方程组时，利用舒尔消元的技巧，先消去与地图点相关的变量，从而显著减小需求解的线性系统的规模，提高求解效率。这要求H矩阵具有特定的稀疏结构（相机-点分离）。</li>
+<li>将顶点添加到优化器: <code>optimizer.addVertex(vPoint);</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="第3步向优化器中添加投影边"><a class="markdownIt-Anchor" href="#第3步向优化器中添加投影边"></a> 第3步：向优化器中添加投影边</h3>
+<p>在添加地图点顶点的同时，遍历该地图点被哪些关键帧观测到，并为每一次有效的观测添加一条投影边。</p>
+<ul>
+<li>对于每个地图点 <code>pMP</code>，获取其观测信息 <code>observations = pMP-&gt;GetObservations()</code>，这是一个记录了观测到此点的关键帧及其在该关键帧中对应特征点索引的map。</li>
+<li>遍历 <code>observations</code> 中的每一个观测 <code>(pKF, feature_index)</code>：
+<ul>
+<li>检查观测关键帧 <code>pKF</code> 是否有效 (非 <code>isBad()</code> 且 <code>pKF-&gt;mnId &lt;= maxKFid</code>，确保是已加入优化器的关键帧)。</li>
+<li>获取该地图点在当前关键帧 <code>pKF</code> 图像上的二维特征点（通常是去畸变后的归一化坐标或像素坐标） <code>kpUn = pKF-&gt;mvKeysUn[feature_index];</code>。</li>
+<li><strong>根据相机类型创建边:</strong>
+<ul>
+<li><strong>单目相机模式 (<code>pKF-&gt;mvuRight[feature_index] &lt; 0</code>):</strong>
+<ul>
+<li>创建 <code>g2o::EdgeSE3ProjectXYZ</code> 对象: <code>e = new g2o::EdgeSE3ProjectXYZ();</code></li>
+<li><strong>连接顶点:</strong>
+<ul>
+<li>边连接的第0个顶点是地图点: <code>e-&gt;setVertex(0, dynamic_cast&lt;g2o::OptimizableGraph::Vertex*&gt;(optimizer.vertex(id)));</code> ( <code>id</code> 是地图点顶点的ID)。</li>
+<li>边连接的第1个顶点是关键帧位姿: <code>e-&gt;setVertex(1, dynamic_cast&lt;g2o::OptimizableGraph::Vertex*&gt;(optimizer.vertex(pKF-&gt;mnId)));</code>。</li>
+</ul>
+</li>
+<li><strong>设置测量值 (Observation/Measurement):</strong> <code>obs &lt;&lt; kpUn.pt.x, kpUn.pt.y; e-&gt;setMeasurement(obs);</code> 测量值即观测到的二维特征点坐标。</li>
+<li><strong>设置信息矩阵 (Information Matrix):</strong> 信息矩阵是测量噪声协方差矩阵的逆，它决定了这条边在总误差函数中的权重。通常与特征点在图像金字塔中的层级 <code>kpUn.octave</code> 相关，层级越高（图像越小，特征点越模糊），其不确定性越大，信息值（权重）越小。 <code>const float&amp; invSigma2 = pKF-&gt;mvInvLevelSigma2[kpUn.octave]; e-&gt;setInformation(Eigen::Matrix2d::Identity() * invSigma2);</code></li>
+<li><strong>设置鲁棒核函数 (Robust Kernel):</strong> 为了减小外点（错误的观测）对优化结果的负面影响，会使用鲁棒核函数。当误差（重投影误差）较大时，鲁棒核函数会动态降低该误差项的权重。
+<ul>
+<li><code>g2o::RobustKernelHuber* rk = new g2o::RobustKernelHuber; e-&gt;setRobustKernel(rk);</code></li>
+<li><code>rk-&gt;setDelta(thHuber2D);</code> Delta是Huber核的阈值，例如 <code>thHuber2D = sqrt(5.99)</code> (对应卡方分布自由度为2，置信度95%的阈值)。如果误差的平方超过这个阈值，其对总代价的贡献会从二次变为线性，避免误差过大导致优化跑飞。</li>
+</ul>
+</li>
+<li><strong>设置相机内参:</strong> 投影计算需要相机内参 (焦距fx, fy, 主点cx, cy)。 <code>e-&gt;fx = pKF-&gt;fx; e-&gt;fy = pKF-&gt;fy; e-&gt;cx = pKF-&gt;cx; e-&gt;cy = pKF-&gt;cy;</code></li>
+<li>将边添加到优化器: <code>optimizer.addEdge(e);</code></li>
+</ul>
+</li>
+<li><strong>双目相机或RGB-D相机模式 (书中未详述，但原理类似):</strong>
+<ul>
+<li>会创建 <code>g2o::EdgeStereoSE3ProjectXYZ</code> 类型的边。</li>
+<li>测量值会包含深度信息或右图像的u坐标。例如，对于双目，测量值可能是 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>u</mi><mi>L</mi></msub><mo separator="true">,</mo><msub><mi>v</mi><mi>L</mi></msub><mo separator="true">,</mo><msub><mi>u</mi><mi>R</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(u_L, v_L, u_R)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">L</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">L</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.00773em;">R</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>。</li>
+<li>信息矩阵通常是 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">3 \times 3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">3</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">3</span></span></span></span> 的。</li>
+<li>鲁棒核的阈值可能是 <code>thHuber3D = sqrt(7.815)</code> (对应卡方分布自由度为3，置信度95%的阈值)。</li>
+<li>同样需要设置相机内参，包括双目基线 <code>bf</code>。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="第4步开始优化"><a class="markdownIt-Anchor" href="#第4步开始优化"></a> 第4步：开始优化</h3>
+<p>配置完成后，启动优化迭代过程。</p>
+<ul>
+<li><strong>初始化优化:</strong> <code>optimizer.initializeOptimization();</code> 这一步会构建Hessian矩阵的结构等。</li>
+<li><strong>执行优化:</strong> <code>optimizer.optimize(nIterations);</code> <code>nIterations</code> 是预设的迭代次数（例如书中提到的10次）。优化器会使用选择的算法（如LM）迭代更新顶点的估计值，直到满足收敛条件或达到最大迭代次数。</li>
+</ul>
+<h3 id="第5步将优化的结果保存起来"><a class="markdownIt-Anchor" href="#第5步将优化的结果保存起来"></a> 第5步：将优化的结果保存起来</h3>
+<p>优化完成后，优化器中的顶点值已经更新为最优估计。需要将这些结果提取出来并更新到SLAM系统的关键帧和地图点对象中。</p>
+<ul>
+<li><strong>更新关键帧位姿:</strong>
+<ul>
+<li>遍历所有参与优化的关键帧 <code>vpKFs</code>。</li>
+<li>对于每个有效关键帧 <code>pKF</code>:
+<ul>
+<li>从优化器中获取对应的位姿顶点: <code>g2o::VertexSE3Expmap* vSE3 = static_cast&lt;g2o::VertexSE3Expmap*&gt;(optimizer.vertex(pKF-&gt;mnId));</code></li>
+<li>获取优化后的位姿估计: <code>g2o::SE3Quat SE3quat = vSE3-&gt;estimate();</code></li>
+<li><strong>有条件地更新位姿:</strong>
+<ul>
+<li><strong>特殊情况 (<code>nLoopKF == 0</code>):</strong> 书中提到，这通常表示该全局BA是在系统刚初始化，地图中只有少量关键帧时（例如，创建初始地图点时）调用的。此时，优化后的位姿可以直接写入关键帧的成员变量中: <code>pKF-&gt;SetPose(Converter::toCvMat(SE3quat));</code></li>
+<li><strong>常规情况 (闭环后调用):</strong> 优化后的位姿会先存储在关键帧的一个专门的成员变量 <code>mTcwGBA</code> 中，而不是立即覆盖原始位姿。 <code>Converter::toCvMat(SE3quat).copyTo(pKF-&gt;mTcwGBA);</code> 这样做可能是为了后续进行验证、或者等待其他模块（如位姿图优化）确认后再统一更新，以保证系统状态的一致性。同时记录是哪个闭环触发了这次全局BA <code>pKF-&gt;mnBAGlobalForKF = nLoopKF;</code>。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>更新地图点位置:</strong> (书中代码片段未完整展示这部分，但逻辑相似)
+<ul>
+<li>遍历所有参与优化的地图点 <code>vpMP</code>。</li>
+<li>对于每个有效地图点 <code>pMP</code>:
+<ul>
+<li>从优化器中获取对应的地图点顶点 (使用 <code>pMP-&gt;mnId + maxKFid + 1</code> 作为ID)。</li>
+<li>获取优化后的三维坐标估计。</li>
+<li>将优化后的坐标更新回地图点对象 <code>pMP-&gt;SetWorldPos(...)</code>。</li>
+<li>如果一个地图点在优化后其观测边数量过少，或者误差过大，可能会被判断为外点并剔除。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="四-全局优化的意义与作用"><a class="markdownIt-Anchor" href="#四-全局优化的意义与作用"></a> 四、全局优化的意义与作用</h2>
+<ol>
+<li><strong>消除累积误差:</strong> SLAM系统在长时间运行时，由于传感器测量噪声、特征匹配的不确定性以及运动估计的微小误差会不断累积，导致估计的轨迹和地图逐渐偏离真实情况。全局优化通过同时考虑所有历史观测和约束，将这些累积误差在整个系统中进行分散和最小化。</li>
+<li><strong>提高地图一致性:</strong> 全局优化确保了构建的地图在全局尺度上是几何一致和准确的。这对于大范围场景的建图尤为重要。特别是在发生<strong>回环检测 (Loop Closure)</strong> 后（即相机回到了先前经过的区域并成功识别出来），全局优化是修正整个轨迹和地图，使回环处的轨迹闭合、地图对齐的关键步骤。</li>
+<li><strong>提升定位精度:</strong> 通过优化所有关键帧的位姿，使得相机在地图中的定位更加准确可靠。一个经过良好优化的地图是后续高精度定位的基础。</li>
+</ol>
+<p>全局优化是计算密集型操作，因此在SLAM系统中不会频繁执行，通常在检测到显著的回环或者累积误差达到一定程度时触发。它是保证SLAM系统长期稳定性和准确性的核心模块之一。</p>
+</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231608640.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/05/14/orbslam2-15/" title="优化——闭环时本质图优化"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231608640.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">优化——闭环时本质图优化</div></div><div class="info-2"><div class="info-item-1">本章节主要阐述在ORB-SLAM2系统中，当检测到闭环（Loop Closing）后，如何通过优化一个称为“本质图”（Essential Graph）的结构来全局校正和优化所有关键帧的位姿。这个过程对消除累积误差、提升地图全局一致性和定位精度至关重要。  一、优化的核心目标与对象  核心函数：OptimizeEssentialGraph。 主要目标：在闭环确认后，对系统中所有已记录的关键帧的位姿（包括位置和姿态，即Sim(3)变换）进行一次全局性的优化调整。 关键点：  不直接优化地图点：在这一特定步骤中，优化过程的变量是关键帧的位姿，而不是三维地图点的坐标。地图点的位置会在关键帧位姿优化完毕后，根据其参考关键帧的位姿更新进行调整。 全局性：优化会影响到地图中所有的关键帧，以达到全局最优的目的。     二、本质图的构成：顶点...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#global-optimization"><span class="toc-text"> Global Optimization</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%E5%85%A8%E5%B1%80%E4%BC%98%E5%8C%96%E7%9A%84%E7%9B%AE%E6%A0%87%E4%B8%8E%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3"><span class="toc-text"> 一、全局优化的目标与核心思想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%E5%85%A8%E5%B1%80%E4%BC%98%E5%8C%96%E7%9A%84%E5%85%B3%E9%94%AE%E5%85%83%E7%B4%A0%E9%A1%B6%E7%82%B9%E4%B8%8E%E8%BE%B9%E5%9F%BA%E4%BA%8E%E5%9B%BE%E4%BC%98%E5%8C%96%E6%A1%86%E6%9E%B6-g2o"><span class="toc-text"> 二、全局优化的关键元素：顶点与边（基于图优化框架 G2O）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%A1%B6%E7%82%B9-vertices"><span class="toc-text"> 1. 顶点 (Vertices)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%BE%B9-edges"><span class="toc-text"> 2. 边 (Edges)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-%E5%85%A8%E5%B1%80%E4%BC%98%E5%8C%96%E7%9A%84%E8%AF%A6%E7%BB%86%E6%B5%81%E7%A8%8B"><span class="toc-text"> 三、全局优化的详细流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC1%E6%AD%A5%E5%88%9D%E5%A7%8B%E5%8C%96g2o%E4%BC%98%E5%8C%96%E5%99%A8"><span class="toc-text"> 第1步：初始化g2o优化器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC2%E6%AD%A5%E5%90%91%E4%BC%98%E5%8C%96%E5%99%A8%E4%B8%AD%E6%B7%BB%E5%8A%A0%E9%A1%B6%E7%82%B9"><span class="toc-text"> 第2步：向优化器中添加顶点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC3%E6%AD%A5%E5%90%91%E4%BC%98%E5%8C%96%E5%99%A8%E4%B8%AD%E6%B7%BB%E5%8A%A0%E6%8A%95%E5%BD%B1%E8%BE%B9"><span class="toc-text"> 第3步：向优化器中添加投影边</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC4%E6%AD%A5%E5%BC%80%E5%A7%8B%E4%BC%98%E5%8C%96"><span class="toc-text"> 第4步：开始优化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC5%E6%AD%A5%E5%B0%86%E4%BC%98%E5%8C%96%E7%9A%84%E7%BB%93%E6%9E%9C%E4%BF%9D%E5%AD%98%E8%B5%B7%E6%9D%A5"><span class="toc-text"> 第5步：将优化的结果保存起来</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-%E5%85%A8%E5%B1%80%E4%BC%98%E5%8C%96%E7%9A%84%E6%84%8F%E4%B9%89%E4%B8%8E%E4%BD%9C%E7%94%A8"><span class="toc-text"> 四、全局优化的意义与作用</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(async () => {
+  const showKatex = () => {
+    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
+  }
+
+  if (!window.katex_js_css) {
+    window.katex_js_css = true
+    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css')
+    if (false) {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js')
+    }
+  }
+
+  showKatex()
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

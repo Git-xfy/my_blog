@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>跟踪 —— 重定位跟踪 | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Relocalization一、核心目标与触发时机 核心目标： 当系统由于各种原因（如快速运动、场景剧变、遮挡等）导致跟踪丢失，即无法确定当前相机帧相对于已有地图的位姿时，重定位模块的目标是在已构建的地图中重新找回当前帧的准确位姿。 触发时机： 这是 SLAM 系统中的一种**“拯救”或“恢复”机制**。它在常规的、依赖连续性的跟踪方法（如恒速模型跟踪、参考关键帧跟踪）均宣告失败后被激活。  二、">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>跟踪 —— 重定位跟踪 | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Relocalization  一、核心目标与触发时机  核心目标： 当系统由于各种原因（如快速运动、场景剧变、遮挡等）导致跟踪丢失，即无法确定当前相机帧相对于已有地图的位姿时，重定位模块的目标是在已构建的地图中重新找回当前帧的准确位姿。 触发时机： 这是 SLAM 系统中的一种**“拯救”或“恢复”机制**。它在常规的、依赖连续性的跟踪方法（如恒速模型跟踪、参考关键帧跟踪）均宣告失败后被激活。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="跟踪 —— 重定位跟踪">
 <meta property="og:url" content="https://feiyblog.netlify.app/2025/05/13/orbslam2-9/index.html">
 <meta property="og:site_name" content="我的学习笔记">
-<meta property="og:description" content="Relocalization一、核心目标与触发时机 核心目标： 当系统由于各种原因（如快速运动、场景剧变、遮挡等）导致跟踪丢失，即无法确定当前相机帧相对于已有地图的位姿时，重定位模块的目标是在已构建的地图中重新找回当前帧的准确位姿。 触发时机： 这是 SLAM 系统中的一种**“拯救”或“恢复”机制**。它在常规的、依赖连续性的跟踪方法（如恒速模型跟踪、参考关键帧跟踪）均宣告失败后被激活。  二、">
+<meta property="og:description" content="Relocalization  一、核心目标与触发时机  核心目标： 当系统由于各种原因（如快速运动、场景剧变、遮挡等）导致跟踪丢失，即无法确定当前相机帧相对于已有地图的位姿时，重定位模块的目标是在已构建的地图中重新找回当前帧的准确位姿。 触发时机： 这是 SLAM 系统中的一种**“拯救”或“恢复”机制**。它在常规的、依赖连续性的跟踪方法（如恒速模型跟踪、参考关键帧跟踪）均宣告失败后被激活。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231601621.png">
 <meta property="article:published_time" content="2025-05-13T07:21:32.000Z">
@@ -168,21 +168,27 @@ btf.addGlobalFn('pjaxComplete', () => {
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231601621.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">跟踪 —— 重定位跟踪</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">跟踪 —— 重定位跟踪</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-13T07:21:32.000Z" title="发表于 2025-05-13 15:21:32">2025-05-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-13T07:22:10.382Z" title="更新于 2025-05-13 15:22:10">2025-05-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/SLAM/">SLAM</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Relocalization"><a href="#Relocalization" class="headerlink" title="Relocalization"></a>Relocalization</h1><h2 id="一、核心目标与触发时机"><a href="#一、核心目标与触发时机" class="headerlink" title="一、核心目标与触发时机"></a>一、核心目标与触发时机</h2><ul>
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231601621.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">跟踪 —— 重定位跟踪</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">跟踪 —— 重定位跟踪</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-13T07:21:32.000Z" title="发表于 2025-05-13 15:21:32">2025-05-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-13T07:22:10.382Z" title="更新于 2025-05-13 15:22:10">2025-05-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/SLAM/">SLAM</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="relocalization"><a class="markdownIt-Anchor" href="#relocalization"></a> Relocalization</h1>
+<h2 id="一-核心目标与触发时机"><a class="markdownIt-Anchor" href="#一-核心目标与触发时机"></a> 一、核心目标与触发时机</h2>
+<ul>
 <li><strong>核心目标：</strong> 当系统由于各种原因（如快速运动、场景剧变、遮挡等）导致跟踪丢失，即无法确定当前相机帧相对于已有地图的位姿时，重定位模块的目标是在已构建的地图中<strong>重新找回当前帧的准确位姿</strong>。</li>
 <li><strong>触发时机：</strong> 这是 SLAM 系统中的一种**“拯救”或“恢复”机制**。它在常规的、依赖连续性的跟踪方法（如恒速模型跟踪、参考关键帧跟踪）均宣告失败后被激活。</li>
 </ul>
-<h2 id="二、核心思想：全局搜索与局部验证"><a href="#二、核心思想：全局搜索与局部验证" class="headerlink" title="二、核心思想：全局搜索与局部验证"></a>二、核心思想：全局搜索与局部验证</h2><p>重定位的整个过程可以概括为两个主要阶段，体现了从粗略的全局匹配到精确的局部验证的思想：</p>
+<h2 id="二-核心思想全局搜索与局部验证"><a class="markdownIt-Anchor" href="#二-核心思想全局搜索与局部验证"></a> 二、核心思想：全局搜索与局部验证</h2>
+<p>重定位的整个过程可以概括为两个主要阶段，体现了从粗略的全局匹配到精确的局部验证的思想：</p>
 <ol>
-<li><strong>全局外观搜索 (Global Appearance-Based Search)：</strong><ul>
+<li><strong>全局外观搜索 (Global Appearance-Based Search)：</strong>
+<ul>
 <li>由于跟踪已经丢失，系统对当前帧的位姿没有任何先验信息或良好的初始估计。</li>
 <li><strong>策略：</strong> 利用<strong>词袋模型 (Bag-of-Words, BoW)</strong> 在整个历史关键帧数据库 (KeyFrame Database) 中进行快速、大规模的搜索。</li>
 <li><strong>目的：</strong> 找出那些在视觉外观上与当前丢失帧最相似的<strong>候选关键帧 (Candidate KeyFrames)</strong>。这些候选帧是潜在的、当前相机可能重新观察到的场景。</li>
 </ul>
 </li>
-<li><strong>局部几何验证与位姿精化 (Local Geometric Verification &amp; Pose Refinement)：</strong><ul>
+<li><strong>局部几何验证与位姿精化 (Local Geometric Verification &amp; Pose Refinement)：</strong>
+<ul>
 <li>对筛选出的每一个候选关键帧，进行更细致的局部处理。</li>
-<li><strong>策略：</strong><ul>
+<li><strong>策略：</strong>
+<ul>
 <li><strong>特征匹配：</strong> 在当前帧和候选关键帧之间进行ORB特征点的匹配。</li>
 <li><strong>初始位姿估计：</strong> 利用匹配上的3D地图点（来自候选关键帧）和当前帧对应的2D特征点，通过 <strong>EPnP (Efficient Perspective-n-Point)</strong> 算法结合RANSAC（随机采样一致性）来估计一个初始的、相对准确的当前帧位姿。EPnP是一种高效的从n对3D-2D点对应中恢复相机位姿的算法。</li>
 <li><strong>迭代优化：</strong> 获得初始位姿后，通过反复的<strong>投影匹配</strong>（将候选关键帧中更多的地图点根据当前估计位姿投影到当前帧，以寻找新的匹配）和<strong>BA优化 (Bundle Adjustment)</strong>（此阶段通常仅优化当前帧的位姿，不改变地图点坐标）来迭代地增加可靠的匹配点数量，并进一步精化当前帧的位姿。</li>
@@ -191,17 +197,22 @@ btf.addGlobalFn('pjaxComplete', () => {
 </ul>
 </li>
 </ol>
-<h2 id="三、关键技术与详细流程"><a href="#三、关键技术与详细流程" class="headerlink" title="三、关键技术与详细流程"></a>三、关键技术与详细流程</h2><h3 id="A-倒排索引-Inverted-Index-加速候选关键帧搜索"><a href="#A-倒排索引-Inverted-Index-加速候选关键帧搜索" class="headerlink" title="A. 倒排索引 (Inverted Index) - 加速候选关键帧搜索"></a>A. 倒排索引 (Inverted Index) - 加速候选关键帧搜索</h3><p>为了避免在可能包含成百上千个关键帧的数据库中进行暴力比对（这在实时系统中是不可接受的），ORB-SLAM2 采用<strong>倒排索引</strong>来高效地完成全局外观搜索。</p>
+<h2 id="三-关键技术与详细流程"><a class="markdownIt-Anchor" href="#三-关键技术与详细流程"></a> 三、关键技术与详细流程</h2>
+<h3 id="a-倒排索引-inverted-index-加速候选关键帧搜索"><a class="markdownIt-Anchor" href="#a-倒排索引-inverted-index-加速候选关键帧搜索"></a> A. 倒排索引 (Inverted Index) - 加速候选关键帧搜索</h3>
+<p>为了避免在可能包含成百上千个关键帧的数据库中进行暴力比对（这在实时系统中是不可接受的），ORB-SLAM2 采用<strong>倒排索引</strong>来高效地完成全局外观搜索。</p>
 <ul>
-<li><p><strong>定义与对比：</strong></p>
+<li>
+<p><strong>定义与对比：</strong></p>
 <ul>
-<li><strong>倒排索引 (Inverted Index)：</strong><ul>
+<li><strong>倒排索引 (Inverted Index)：</strong>
+<ul>
 <li><strong>索引基础：</strong> 以“视觉单词 (Word)”（词袋模型中的基本单元）为索引。</li>
 <li><strong>存储内容：</strong> 对于词袋模型词典中的每一个视觉单词，倒排索引存储一个列表，该列表记录了所有包含这个特定视觉单词的关键帧的标识（如指针或ID）以及可能的权重信息。</li>
 <li><strong>核心优势：</strong> 可以非常快速地查询到“有哪些关键帧包含了某个（或某组）特定的视觉单词”。这对于判断图像间的视觉相似性（即共享的视觉单词数量和权重）至关重要且效率极高。</li>
 </ul>
 </li>
-<li><strong>直接索引 (Direct Index)：</strong><ul>
+<li><strong>直接索引 (Direct Index)：</strong>
+<ul>
 <li><strong>索引基础：</strong> 以“图像 (KeyFrame)”为索引。</li>
 <li><strong>存储内容：</strong> 每张图像（关键帧）存储其提取到的所有特征点，以及每个特征点在词袋树中所对应的视觉单词（节点ID）。</li>
 <li><strong>核心优势：</strong> 能够快速获取一个关键帧中属于同一个视觉单词（或词袋树节点）下的所有特征点，这在进行两帧之间的特征匹配和后续的几何关系验证时非常有用。</li>
@@ -209,18 +220,22 @@ btf.addGlobalFn('pjaxComplete', () => {
 </li>
 </ul>
 </li>
-<li><p><strong>倒排索引在ORB-SLAM2中的数据结构示例：</strong></p>
+<li>
+<p><strong>倒排索引在ORB-SLAM2中的数据结构示例：</strong></p>
   <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// mvInvertedFile 是一个向量，其索引是 WordId (视觉单词的ID)</span></span><br><span class="line"><span class="comment">// mvInvertedFile[word_id] 是一个链表，存储了所有包含 word_id 这个视觉单词的关键帧指针</span></span><br><span class="line">std::vector&lt;std::list&lt;KeyFrame*&gt;&gt; mvInvertedFile;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p><strong>倒排索引的维护：</strong></p>
+<li>
+<p><strong>倒排索引的维护：</strong></p>
 <ul>
-<li><strong>添加新关键帧时 (<code>KeyFrameDatabase::add(KeyFrame *pKF)</code>)：</strong><ol>
+<li><strong>添加新关键帧时 (<code>KeyFrameDatabase::add(KeyFrame *pKF)</code>)：</strong>
+<ol>
 <li>获取新关键帧 <code>pKF</code> 的词袋向量 <code>pKF-&gt;mBowVec</code>（该向量记录了关键帧中包含的所有视觉单词及其权重）。</li>
 <li>遍历此BoW向量中的每一个视觉单词 (WordId, WordValue)。</li>
 <li>对于每一个WordId，将该关键帧 <code>pKF</code> 的指针添加到 <code>mvInvertedFile[WordId]</code> 对应的链表中。</li>
 </ol>
 </li>
-<li><strong>删除关键帧时 (<code>KeyFrameDatabase::erase(KeyFrame* pKF)</code>)：</strong><ol>
+<li><strong>删除关键帧时 (<code>KeyFrameDatabase::erase(KeyFrame* pKF)</code>)：</strong>
+<ol>
 <li>获取待删除关键帧 <code>pKF</code> 的词袋向量。</li>
 <li>遍历此BoW向量中的每一个视觉单词.</li>
 <li>对于每一个WordId，访问 <code>mvInvertedFile[WordId]</code> 对应的链表，并从中找到并移除关键帧 <code>pKF</code> 的指针。</li>
@@ -229,9 +244,11 @@ btf.addGlobalFn('pjaxComplete', () => {
 </ul>
 </li>
 </ul>
-<h3 id="B-搜索重定位候选关键帧-KeyFrameDatabase-DetectRelocalizationCandidates-Frame-F"><a href="#B-搜索重定位候选关键帧-KeyFrameDatabase-DetectRelocalizationCandidates-Frame-F" class="headerlink" title="B. 搜索重定位候选关键帧 (KeyFrameDatabase::DetectRelocalizationCandidates(Frame *F))"></a>B. 搜索重定位候选关键帧 (<code>KeyFrameDatabase::DetectRelocalizationCandidates(Frame *F)</code>)</h3><p>此函数的目标是从整个关键帧数据库中，高效地筛选出一小组与当前丢失帧 <code>F</code> 最可能在视觉上匹配的候选关键帧。</p>
+<h3 id="b-搜索重定位候选关键帧-keyframedatabasedetectrelocalizationcandidatesframe-f"><a class="markdownIt-Anchor" href="#b-搜索重定位候选关键帧-keyframedatabasedetectrelocalizationcandidatesframe-f"></a> B. 搜索重定位候选关键帧 (<code>KeyFrameDatabase::DetectRelocalizationCandidates(Frame *F)</code>)</h3>
+<p>此函数的目标是从整个关键帧数据库中，高效地筛选出一小组与当前丢失帧 <code>F</code> 最可能在视觉上匹配的候选关键帧。</p>
 <ol>
-<li><strong>步骤 1：初步筛选 - 找出共享单词的关键帧 (<code>lKFsSharingWords</code>)</strong><ul>
+<li><strong>步骤 1：初步筛选 - 找出共享单词的关键帧 (<code>lKFsSharingWords</code>)</strong>
+<ul>
 <li>遍历当前帧 <code>F</code> 的BoW向量 <code>F-&gt;mBowVec</code> 中的每一个视觉单词 (WordId)。</li>
 <li>利用<strong>倒排索引 <code>mvInvertedFile[WordId]</code></strong>，获取所有包含该WordId的历史关键帧列表。</li>
 <li>将这些历史关键帧加入到一个临时的集合 <code>lKFsSharingWords</code> 中。</li>
@@ -240,14 +257,16 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li>如果 <code>lKFsSharingWords</code> 在处理完当前帧所有单词后仍为空（即当前帧与数据库中所有关键帧都没有共同的视觉单词），则无法进行重定位，函数返回空列表。</li>
 </ul>
 </li>
-<li><strong>步骤 2：设定共同单词数阈值1 (<code>minCommonWords</code>)</strong><ul>
+<li><strong>步骤 2：设定共同单词数阈值1 (<code>minCommonWords</code>)</strong>
+<ul>
 <li>遍历 <code>lKFsSharingWords</code> 中的所有关键帧。</li>
 <li>找到其中与当前帧 <code>F</code> 共享单词数最多的那个值，记为 <code>maxCommonWords</code>。</li>
 <li>设定第一个筛选阈值：<code>minCommonWords = maxCommonWords * 0.8f</code> (例如，取最大共享单词数的80%)。</li>
 <li><strong>目的：</strong> 过滤掉那些虽然与当前帧有共同单词，但共同数量过少的关键帧，减少后续计算量。</li>
 </ul>
 </li>
-<li><strong>步骤 3：计算BoW相似度得分并进行二次筛选 (<code>lScoreAndMatch</code>)</strong><ul>
+<li><strong>步骤 3：计算BoW相似度得分并进行二次筛选 (<code>lScoreAndMatch</code>)</strong>
+<ul>
 <li>再次遍历 <code>lKFsSharingWords</code>。</li>
 <li>只挑选那些共享单词数 <code>pKFi-&gt;mnRelocWords &gt; minCommonWords</code> 的关键帧 <code>pKFi</code>。</li>
 <li>对于这些通过了阈值1的关键帧，计算它们各自的BoW向量与当前帧 <code>F</code> 的BoW向量之间的<strong>相似度得分 <code>si</code></strong>。这个得分通常由词袋库提供，例如 <code>si = mpVoc-&gt;score(F-&gt;mBowVec, pKFi-&gt;mBowVec);</code>。</li>
@@ -256,12 +275,15 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li>如果 <code>lScoreAndMatch</code> 在此步骤后为空，则返回空列表。</li>
 </ul>
 </li>
-<li><strong>步骤 4：计算共视组累积得分并设定阈值2 (<code>minScoreToRetain</code>)</strong><ul>
+<li><strong>步骤 4：计算共视组累积得分并设定阈值2 (<code>minScoreToRetain</code>)</strong>
+<ul>
 <li><strong>核心思想：</strong> 单个关键帧与当前帧的视觉相似度可能存在偶然性。如果一个候选关键帧及其在地图中共视关系紧密的“邻居”们（共同构成一个稳定的场景区域）都与当前帧相似，那么这个区域就更可能是当前相机真实观察到的场景。这增加了重定位的鲁棒性。</li>
-<li>遍历 <code>lScoreAndMatch</code> 中的每一个配对 <code>(score, pKFi)</code>：<ul>
+<li>遍历 <code>lScoreAndMatch</code> 中的每一个配对 <code>(score, pKFi)</code>：
+<ul>
 <li>令 <code>pKFi</code> 为当前考虑的中心候选关键帧。</li>
 <li>获取 <code>pKFi</code> 在共视图中连接最紧密的一组关键帧（例如，通过 <code>pKFi-&gt;GetBestCovisibilityKeyFrames(10)</code> 获取共视程度最高的10个邻居关键帧 <code>vpNeighs</code>）。</li>
-<li>计算这个以 <code>pKFi</code> 为核心的“共视组”的<strong>累积得分 <code>accScore</code></strong>：<ul>
+<li>计算这个以 <code>pKFi</code> 为核心的“共视组”的<strong>累积得分 <code>accScore</code></strong>：
+<ul>
 <li>初始 <code>accScore = pKFi-&gt;mRelocScore</code> (即 <code>score</code> from <code>lScoreAndMatch</code>)。</li>
 <li>遍历 <code>vpNeighs</code> 中的每一个邻居关键帧 <code>pKF2</code>。</li>
 <li><strong>重要条件：</strong> 只有当这个邻居 <code>pKF2</code> <strong>也存在于 <code>lScoreAndMatch</code> 中</strong>（即 <code>pKF2-&gt;mnRelocQuery == F-&gt;mnId</code>，意味着它也通过了步骤3的筛选，与当前帧F有足够的直接相似性）时，才将其自身的得分 <code>pKF2-&gt;mRelocScore</code> 加入到 <code>accScore</code> 中。</li>
@@ -275,7 +297,8 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li>设定第二个筛选阈值：<code>minScoreToRetain = 0.75f * bestAccScore</code> (例如，取最高累积得分的75%)。</li>
 </ul>
 </li>
-<li><strong>步骤 5：筛选最终候选关键帧组 (<code>vpRelocCandidates</code>)</strong><ul>
+<li><strong>步骤 5：筛选最终候选关键帧组 (<code>vpRelocCandidates</code>)</strong>
+<ul>
 <li>遍历 <code>lAccScoreAndMatch</code> 中的每一个配对 <code>(accScore, pBestKFInGroup)</code>。</li>
 <li>只选择那些其累积得分 <code>accScore &gt; minScoreToRetain</code> 的组。</li>
 <li>对于每个通过此阈值的组，将其对应的那个具有最高个体得分的关键帧 <code>pBestKFInGroup</code> 加入到最终的候选关键帧列表 <code>vpRelocCandidates</code> 中。</li>
@@ -284,23 +307,29 @@ btf.addGlobalFn('pjaxComplete', () => {
 </ul>
 </li>
 </ol>
-<h3 id="C-执行重定位尝试-Tracking-Relocalization"><a href="#C-执行重定位尝试-Tracking-Relocalization" class="headerlink" title="C. 执行重定位尝试 (Tracking::Relocalization())"></a>C. 执行重定位尝试 (<code>Tracking::Relocalization()</code>)</h3><p>在获得了经过层层筛选的候选关键帧列表后，系统将逐个尝试用它们来恢复当前丢失帧 <code>mCurrentFrame</code> 的位姿。</p>
+<h3 id="c-执行重定位尝试-trackingrelocalization"><a class="markdownIt-Anchor" href="#c-执行重定位尝试-trackingrelocalization"></a> C. 执行重定位尝试 (<code>Tracking::Relocalization()</code>)</h3>
+<p>在获得了经过层层筛选的候选关键帧列表后，系统将逐个尝试用它们来恢复当前丢失帧 <code>mCurrentFrame</code> 的位姿。</p>
 <ol>
-<li><strong>步骤 1：计算当前帧的BoW向量。</strong><ul>
+<li><strong>步骤 1：计算当前帧的BoW向量。</strong>
+<ul>
 <li><code>mCurrentFrame.ComputeBoW();</code> (如果尚未计算)。</li>
 </ul>
 </li>
-<li><strong>步骤 2：获取候选关键帧列表。</strong><ul>
+<li><strong>步骤 2：获取候选关键帧列表。</strong>
+<ul>
 <li>调用 <code>mpKeyFrameDB-&gt;DetectRelocalizationCandidates(&amp;mCurrentFrame)</code> 得到 <code>vpCandidateKFs</code>。</li>
 <li>如果 <code>vpCandidateKFs</code> 为空，则表示没有找到合适的候选，重定位失败，函数返回 <code>false</code>。</li>
 </ul>
 </li>
-<li><strong>步骤 3：初始化 - 遍历候选，进行初步BoW匹配，准备PnP求解器。</strong><ul>
-<li>对 <code>vpCandidateKFs</code> 中的每个候选关键帧 <code>pKF</code>：<ul>
+<li><strong>步骤 3：初始化 - 遍历候选，进行初步BoW匹配，准备PnP求解器。</strong>
+<ul>
+<li>对 <code>vpCandidateKFs</code> 中的每个候选关键帧 <code>pKF</code>：
+<ul>
 <li>检查 <code>pKF</code> 是否有效 (例如，<code>pKF-&gt;isBad()</code>)，无效则跳过。</li>
 <li><strong>BoW特征匹配：</strong> 调用 <code>matcher.SearchByBoW(pKF, mCurrentFrame, vvpMapPointMatches[i])</code>。<code>vvpMapPointMatches[i]</code> 是一个 <code>std::vector&lt;MapPoint*&gt;</code>，存储了当前帧 <code>mCurrentFrame</code> 的特征点与候选关键帧 <code>pKF</code> 的地图点之间的匹配关系。函数返回匹配上的点对数量 <code>nmatches</code>。</li>
 <li><strong>初步过滤：</strong> 如果 <code>nmatches &lt; 15</code> (阈值，表示匹配太少)，则认为此候选关键帧不足以进行可靠的位姿估计，将其标记为已丢弃 <code>vbDiscarded[i] = true;</code>，然后继续处理下一个候选。</li>
-<li><strong>创建PnP求解器：</strong> 如果 <code>nmatches &gt;= 15</code>，则为此候选关键帧创建一个 <code>PnPsolver</code> 实例（ORB-SLAM2中使用的是EPnP算法的实现）。这个求解器会与当前帧 <code>mCurrentFrame</code> 以及刚获得的匹配 <code>vvpMapPointMatches[i]</code> 相关联。同时设置PnP求解器所需的RANSAC参数，如：<ul>
+<li><strong>创建PnP求解器：</strong> 如果 <code>nmatches &gt;= 15</code>，则为此候选关键帧创建一个 <code>PnPsolver</code> 实例（ORB-SLAM2中使用的是EPnP算法的实现）。这个求解器会与当前帧 <code>mCurrentFrame</code> 以及刚获得的匹配 <code>vvpMapPointMatches[i]</code> 相关联。同时设置PnP求解器所需的RANSAC参数，如：
+<ul>
 <li><code>probability = 0.99</code> (RANSAC成功概率)</li>
 <li><code>minInliers = 10</code> (RANSAC迭代中，接受一个解所需的最小内点数)</li>
 <li><code>maxIterations = 300</code> (RANSAC最大迭代次数)</li>
@@ -314,12 +343,16 @@ btf.addGlobalFn('pjaxComplete', () => {
 </li>
 </ul>
 </li>
-<li><strong>步骤 4：核心循环 - 迭代尝试PnP求解、位姿优化和投影匹配。</strong><ul>
+<li><strong>步骤 4：核心循环 - 迭代尝试PnP求解、位姿优化和投影匹配。</strong>
+<ul>
 <li>此步骤在一个 <code>while (nCandidates &gt; 0 &amp;&amp; !bMatch)</code> 的循环中进行。<code>bMatch</code> 标志位表示是否已有一个候选关键帧成功重定位了当前帧。</li>
-<li>在循环中，再次遍历所有未被标记为 <code>vbDiscarded[i]</code> 的候选关键帧及其对应的 <code>PnPsolver</code> <code>vpPnPsolvers[i]</code>：<ul>
-<li><strong>a. EPnP迭代求解初始位姿：</strong><ul>
+<li>在循环中，再次遍历所有未被标记为 <code>vbDiscarded[i]</code> 的候选关键帧及其对应的 <code>PnPsolver</code> <code>vpPnPsolvers[i]</code>：
+<ul>
+<li><strong>a. EPnP迭代求解初始位姿：</strong>
+<ul>
 <li>调用 <code>PnPsolver* pSolver = vpPnPsolvers[i];</code></li>
-<li><code>cv::Mat Tcw = pSolver-&gt;iterate(5, bNoMore, vbInliers, nInliers);</code><ul>
+<li><code>cv::Mat Tcw = pSolver-&gt;iterate(5, bNoMore, vbInliers, nInliers);</code>
+<ul>
 <li><code>iterate(5, ...)</code>: 尝试进行最多5轮RANSAC迭代（或者直到内部判断已充分探索）。</li>
 <li><code>bNoMore</code>: 输出参数，如果为 <code>true</code>，表示此 <code>PnPsolver</code> 的RANSAC迭代已达到最大次数或无法找到更多解，应丢弃此候选。</li>
 <li><code>vbInliers</code>: 输出参数，一个 <code>std::vector&lt;bool&gt;</code>，标记了EPnP求解后哪些初始匹配点被认为是内点。</li>
@@ -330,8 +363,10 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li>如果 <code>bNoMore</code> 为 <code>true</code>，则 <code>vbDiscarded[i] = true; nCandidates--;</code> 并继续处理下一个候选。</li>
 </ul>
 </li>
-<li><strong>b. 首次位姿优化 (BA) - 如果EPnP成功：</strong><ul>
-<li>如果 <code>!Tcw.empty()</code> (EPnP求解得到一个位姿)：<ul>
+<li><strong>b. 首次位姿优化 (BA) - 如果EPnP成功：</strong>
+<ul>
+<li>如果 <code>!Tcw.empty()</code> (EPnP求解得到一个位姿)：
+<ul>
 <li>将求解得到的 <code>Tcw</code> 赋给当前帧：<code>Tcw.copyTo(mCurrentFrame.mTcw);</code>。</li>
 <li>根据 <code>vbInliers</code>，将EPnP认为是内点的那些匹配（即 <code>vvpMapPointMatches[i][j]</code>）关联到当前帧的地图点列表 <code>mCurrentFrame.mvpMapPoints[j]</code>。其他未标记为内点的，在当前帧中对应位置设为 <code>NULL</code>。</li>
 <li>调用 <code>int nGood = Optimizer::PoseOptimization(&amp;mCurrentFrame);</code>。这是一个仅优化位姿的BA，它使用当前帧 <code>mCurrentFrame</code> 中所有已关联的地图点来优化其位姿 <code>mCurrentFrame.mTcw</code>。函数返回优化后的内点数量 <code>nGood</code>。</li>
@@ -341,10 +376,13 @@ btf.addGlobalFn('pjaxComplete', () => {
 </li>
 </ul>
 </li>
-<li><strong>c. 首次投影匹配 (尝试增加匹配点 - Rescue Attempt 1) - 如果首次BA内点数不足：</strong><ul>
-<li>如果 <code>nGood &lt; 50</code> (例如，阈值设为50，表示首次BA后的内点数仍不够理想，但有挽救价值)：<ul>
+<li><strong>c. 首次投影匹配 (尝试增加匹配点 - Rescue Attempt 1) - 如果首次BA内点数不足：</strong>
+<ul>
+<li>如果 <code>nGood &lt; 50</code> (例如，阈值设为50，表示首次BA后的内点数仍不够理想，但有挽救价值)：
+<ul>
 <li><code>sFound</code>: 一个 <code>std::set&lt;MapPoint*&gt;</code>，包含当前 <code>mCurrentFrame.mvpMapPoints</code> 中所有非空的地图点（即当前已知的内点）。</li>
-<li><code>int nadditional = matcher2.SearchByProjection(mCurrentFrame, vpCandidateKFs[i], sFound, 10, 100);</code><ul>
+<li><code>int nadditional = matcher2.SearchByProjection(mCurrentFrame, vpCandidateKFs[i], sFound, 10, 100);</code>
+<ul>
 <li><code>mCurrentFrame</code>: 当前帧，其位姿是刚通过首次BA优化过的。</li>
 <li><code>vpCandidateKFs[i]</code>: 当前正在处理的候选关键帧。</li>
 <li><code>sFound</code>: 告诉 <code>SearchByProjection</code> 不要重复匹配这些已经找到的点。</li>
@@ -357,18 +395,23 @@ btf.addGlobalFn('pjaxComplete', () => {
 </li>
 </ul>
 </li>
-<li><strong>d. 第二次位姿优化 (BA) - 如果首次投影匹配有效：</strong><ul>
-<li>如果 <code>nadditional + nGood &gt;= 50</code> (即首次投影匹配增加了足够的点，使得总数有望达标)：<ul>
+<li><strong>d. 第二次位姿优化 (BA) - 如果首次投影匹配有效：</strong>
+<ul>
+<li>如果 <code>nadditional + nGood &gt;= 50</code> (即首次投影匹配增加了足够的点，使得总数有望达标)：
+<ul>
 <li>再次调用 <code>nGood = Optimizer::PoseOptimization(&amp;mCurrentFrame);</code> 使用更多的匹配点（原有的 <code>nGood</code> + 新增的 <code>nadditional</code>）来优化位姿。</li>
 </ul>
 </li>
 </ul>
 </li>
-<li><strong>e. 第二次投影匹配 (更精细地增加匹配点 - Rescue Attempt 2) - 如果二次BA后仍有希望：</strong><ul>
-<li>如果第二次BA优化后，内点数 <code>nGood</code> 仍未达到最终目标50，但处于一个有希望的区间，例如 <code>30 &lt; nGood &lt; 50</code>：<ul>
+<li><strong>e. 第二次投影匹配 (更精细地增加匹配点 - Rescue Attempt 2) - 如果二次BA后仍有希望：</strong>
+<ul>
+<li>如果第二次BA优化后，内点数 <code>nGood</code> 仍未达到最终目标50，但处于一个有希望的区间，例如 <code>30 &lt; nGood &lt; 50</code>：
+<ul>
 <li>这表明当前帧的位姿可能因为上一步的BA而变得更准确了。值得用更严格的参数再尝试一次投影匹配，以期找到更多高质量的匹配。</li>
 <li>清空 <code>sFound</code> 并重新加入当前所有内点。</li>
-<li><code>nadditional = matcher2.SearchByProjection(mCurrentFrame, vpCandidateKFs[i], sFound, 3, 64);</code><ul>
+<li><code>nadditional = matcher2.SearchByProjection(mCurrentFrame, vpCandidateKFs[i], sFound, 3, 64);</code>
+<ul>
 <li><code>3</code>: 使用更小的投影搜索窗口（更精确的位姿允许更小的搜索范围）。</li>
 <li><code>64</code>: 可能是更严格的描述子匹配阈值（例如，ORB描述子汉明距离上限）。</li>
 </ul>
@@ -377,16 +420,20 @@ btf.addGlobalFn('pjaxComplete', () => {
 </li>
 </ul>
 </li>
-<li><strong>f. 第三次位姿优化 (BA) - 如果第二次投影匹配有效：</strong><ul>
-<li>如果 <code>nGood + nadditional &gt;= 50</code> (即第二次投影匹配使得总数达标)：<ul>
+<li><strong>f. 第三次位姿优化 (BA) - 如果第二次投影匹配有效：</strong>
+<ul>
+<li>如果 <code>nGood + nadditional &gt;= 50</code> (即第二次投影匹配使得总数达标)：
+<ul>
 <li>最后进行一次 <code>nGood = Optimizer::PoseOptimization(&amp;mCurrentFrame);</code>。</li>
 <li>清除优化后的外点。</li>
 </ul>
 </li>
 </ul>
 </li>
-<li><strong>g. 判断当前候选关键帧是否成功重定位：</strong><ul>
-<li>如果在上述 <strong>任何一次BA优化</strong> (b, d, 或 f) 之后，内点数量 <code>nGood &gt;= 50</code> (阈值，表示找到了足够多的可靠匹配)：<ul>
+<li><strong>g. 判断当前候选关键帧是否成功重定位：</strong>
+<ul>
+<li>如果在上述 <strong>任何一次BA优化</strong> (b, d, 或 f) 之后，内点数量 <code>nGood &gt;= 50</code> (阈值，表示找到了足够多的可靠匹配)：
+<ul>
 <li>则认为使用当前的候选关键帧 <code>vpCandidateKFs[i]</code> 已经成功地重定位了当前帧 <code>mCurrentFrame</code>。</li>
 <li>设置 <code>bMatch = true;</code>。</li>
 <li><strong><code>break;</code></strong> 跳出当前对所有候选关键帧的遍历循环（即<code>for(int i=0; i&lt;nKFs; i++)</code>循环）。一旦有一个候选成功，就不再考虑其他候选了。</li>
@@ -398,10 +445,13 @@ btf.addGlobalFn('pjaxComplete', () => {
 </li>
 </ul>
 </li>
-<li><strong>步骤 5：返回最终结果。</strong><ul>
-<li>当 <code>while</code> 循环结束（因为 <code>nCandidates &lt;= 0</code> 或 <code>bMatch == true</code>）：<ul>
+<li><strong>步骤 5：返回最终结果。</strong>
+<ul>
+<li>当 <code>while</code> 循环结束（因为 <code>nCandidates &lt;= 0</code> 或 <code>bMatch == true</code>）：
+<ul>
 <li>如果 <code>!bMatch</code>，则表示尝试了所有（或所有有希望的）候选关键帧后，均未能成功重定位。函数返回 <code>false</code>。</li>
-<li>如果 <code>bMatch</code> 为 <code>true</code>，则重定位成功。<ul>
+<li>如果 <code>bMatch</code> 为 <code>true</code>，则重定位成功。
+<ul>
 <li>记录当前成功重定位的帧ID：<code>mnLastRelocFrameId = mCurrentFrame.mnId;</code> (这可以用于防止系统在短时间内对同一帧反复进行不必要的重定位尝试)。</li>
 <li>函数返回 <code>true</code>。当前帧 <code>mCurrentFrame</code> 的位姿 <code>mTcw</code> 和关联的地图点 <code>mvpMapPoints</code> 已经被更新。</li>
 </ul>
@@ -411,58 +461,31 @@ btf.addGlobalFn('pjaxComplete', () => {
 </ul>
 </li>
 </ol>
-<h2 id="四、重定位效果与重要性"><a href="#四、重定位效果与重要性" class="headerlink" title="四、重定位效果与重要性"></a>四、重定位效果与重要性</h2><ul>
+<h2 id="四-重定位效果与重要性"><a class="markdownIt-Anchor" href="#四-重定位效果与重要性"></a> 四、重定位效果与重要性</h2>
+<ul>
 <li><strong>鲁棒性强：</strong> 重定位模块的设计使其具有“顽强的生命力”，能够在诸多挑战性场景下（如环境外观发生较大尺度变化、存在动态物体干扰、光照剧变后恢复等）成功找回丢失的相机位姿。</li>
 <li><strong>系统连续性保障：</strong> 它是保证SLAM系统长期稳定运行和从跟踪失败中恢复的关键。没有有效的重定位，一次跟踪丢失就可能导致整个SLAM任务失败。</li>
 </ul>
-<h2 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h2><p>ORB-SLAM2的重定位是一个精心设计的多阶段过程，它巧妙地结合了：</p>
+<h2 id="五-总结"><a class="markdownIt-Anchor" href="#五-总结"></a> 五、总结</h2>
+<p>ORB-SLAM2的重定位是一个精心设计的多阶段过程，它巧妙地结合了：</p>
 <ul>
 <li><strong>高效的全局场景识别</strong>：通过词袋模型和倒排索引技术，快速从大规模地图中检索潜在匹配区域。</li>
 <li><strong>鲁棒的初始位姿估计</strong>：利用EPnP算法和RANSAC策略，从稀疏的初始匹配中求解相机位姿。</li>
 <li><strong>迭代的位姿精化和数据关联</strong>：通过多次BA优化和引导性的投影匹配，不断提升位姿的准确性并增加可靠的3D-2D对应关系。</li>
 </ul>
 <p>这个模块的复杂性正体现了其在应对SLAM核心挑战——跟踪丢失——时所付出的努力和实现的高性能。</p>
-</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231601621.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/05/13/orbslam2-8/" title="跟踪 —— 恒速跟踪"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231601621.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">跟踪 —— 恒速跟踪</div></div><div class="info-2"><div class="info-item-1">TrackWithMotionModel一、核心思想与定义恒速模型跟踪基于一个核心假设：在连续的图像帧之间极短的时间内（通常为几十毫秒），相机的运动状态可以近似为匀速运动。 因此，可以利用上一帧的位姿以及先前估计得到的**帧间相对运动（速度和角速度，统称为速度 V）来预测当前帧的位姿，并以此为初始值进行后续的匹配和优化。 二、为何使用恒速模型跟踪？ 效率优先： 在地图初始化并通过参考关键帧跟踪成功获得初始速度后，恒速模型提供了一种更简单、计算更快的位姿估计方法。 相比于参考关键帧跟踪（涉及词袋匹配等），恒速模型直接利用运动先验，对实时性要求高的SLAM系统非常重要。   常用策略： 一旦系统有了速度信息，恒速模型便成为跟踪线程中的首选和最常用的跟踪方法。    三、关键公式 速度 (Velocity) $\mathbf{V}$： 表示从上一帧 (l) 到当前帧 (c) 的相对位姿变换 $\mathbf{T}_{\mathrm{cl}}$。 如果上一帧的世界位姿为 $\mathbf{T}{\mathrm{lw}}$，当前帧的世界位姿为...</div></div></div></a><a class="pagination-related" href="/2025/05/13/orbslam2-11/" title="跟踪 —— 局部地图跟踪"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231601621.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">跟踪 —— 局部地图跟踪</div></div><div class="info-2"><div class="info-item-1">Local Map Tracking1. 目标与定位 角色：第二阶段跟踪，在初步跟踪（参考关键帧、恒速模型、重定位）之后进行。 目的：利用更丰富的局部地图信息，对第一阶段获得的当前帧位姿进行精细化优化，得到更准确的位姿。 核心：增加匹配约束，仅优化当前帧位姿。  2. 与“局部建图线程 (Local Mapping)”的区别 局部地图 (Local Map) - 用于本阶段（局部地图跟踪） 数据：由局部关键帧及其观测到的局部地图点构成。 功能：为当前帧提供投影匹配候选，仅优化当前帧位姿。不改变关键帧位姿，也不改变地图点三维坐标。 本质：“用图”来精调当前帧。   局部建图线程 (Local Mapping) - 独立线程 数据：处理新生成的关键帧。 功能： 生成新的地图点。 进行局部BA (Bundle Adjustment)，同时优化局部区域内的关键帧位姿和地图点坐标。 剔除冗余关键帧和不可靠地图点。   本质：“建图”与“维护图”。    3. 局部地图跟踪的核心步骤第 1...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Relocalization"><span class="toc-text">Relocalization</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%A0%B8%E5%BF%83%E7%9B%AE%E6%A0%87%E4%B8%8E%E8%A7%A6%E5%8F%91%E6%97%B6%E6%9C%BA"><span class="toc-text">一、核心目标与触发时机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3%EF%BC%9A%E5%85%A8%E5%B1%80%E6%90%9C%E7%B4%A2%E4%B8%8E%E5%B1%80%E9%83%A8%E9%AA%8C%E8%AF%81"><span class="toc-text">二、核心思想：全局搜索与局部验证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF%E4%B8%8E%E8%AF%A6%E7%BB%86%E6%B5%81%E7%A8%8B"><span class="toc-text">三、关键技术与详细流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#A-%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95-Inverted-Index-%E5%8A%A0%E9%80%9F%E5%80%99%E9%80%89%E5%85%B3%E9%94%AE%E5%B8%A7%E6%90%9C%E7%B4%A2"><span class="toc-text">A. 倒排索引 (Inverted Index) - 加速候选关键帧搜索</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#B-%E6%90%9C%E7%B4%A2%E9%87%8D%E5%AE%9A%E4%BD%8D%E5%80%99%E9%80%89%E5%85%B3%E9%94%AE%E5%B8%A7-KeyFrameDatabase-DetectRelocalizationCandidates-Frame-F"><span class="toc-text">B. 搜索重定位候选关键帧 (KeyFrameDatabase::DetectRelocalizationCandidates(Frame *F))</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E6%89%A7%E8%A1%8C%E9%87%8D%E5%AE%9A%E4%BD%8D%E5%B0%9D%E8%AF%95-Tracking-Relocalization"><span class="toc-text">C. 执行重定位尝试 (Tracking::Relocalization())</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E9%87%8D%E5%AE%9A%E4%BD%8D%E6%95%88%E6%9E%9C%E4%B8%8E%E9%87%8D%E8%A6%81%E6%80%A7"><span class="toc-text">四、重定位效果与重要性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-text">五、总结</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
-  const loadMathjax = () => {
-    if (!window.MathJax) {
-      window.MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']],
-          tags: 'none',
-        },
-        chtml: {
-          scale: 1.1
-        },
-        options: {
-          enableMenu: true,
-          renderActions: {
-            findScript: [10, doc => {
-              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
-                const display = !!node.type.match(/; *mode=display/)
-                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
-                const text = document.createTextNode('')
-                node.parentNode.replaceChild(text, node)
-                math.start = {node: text, delim: '', n: 0}
-                math.end = {node: text, delim: '', n: 0}
-                doc.math.push(math)
-              }
-            }, '']
-          }
-        }
-      }
+</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231601621.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/05/13/orbslam2-8/" title="跟踪 —— 恒速跟踪"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231601621.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">跟踪 —— 恒速跟踪</div></div><div class="info-2"><div class="info-item-1"> TrackWithMotionModel  一、核心思想与定义 恒速模型跟踪基于一个核心假设：在连续的图像帧之间极短的时间内（通常为几十毫秒），相机的运动状态可以近似为匀速运动。 因此，可以利用上一帧的位姿以及先前估计得到的**帧间相对运动（速度和角速度，统称为速度 V）来预测当前帧的位姿，并以此为初始值进行后续的匹配和优化。  二、为何使用恒速模型跟踪？  效率优先：  在地图初始化并通过参考关键帧跟踪成功获得初始速度后，恒速模型提供了一种更简单、计算更快的位姿估计方法。 相比于参考关键帧跟踪（涉及词袋匹配等），恒速模型直接利用运动先验，对实时性要求高的SLAM系统非常重要。   常用策略：  一旦系统有了速度信息，恒速模型便成为跟踪线程中的首选和最常用的跟踪方法。     三、关键公式  速度 (Velocity) V\mathbf{V}V：  表示从上一帧 (l) 到当前帧 (c) 的相对位姿变换 Tcl\mathbf{T}_{\mathrm{cl}}Tcl​。 如果上一帧的世界位姿为 Tlw\mathbf{T}{\mathrm{lw}}Tlw，当前帧的世界位姿为...</div></div></div></a><a class="pagination-related" href="/2025/05/13/orbslam2-11/" title="跟踪 —— 局部地图跟踪"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231601621.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">跟踪 —— 局部地图跟踪</div></div><div class="info-2"><div class="info-item-1"> Local Map Tracking  1. 目标与定位  角色：第二阶段跟踪，在初步跟踪（参考关键帧、恒速模型、重定位）之后进行。 目的：利用更丰富的局部地图信息，对第一阶段获得的当前帧位姿进行精细化优化，得到更准确的位姿。 核心：增加匹配约束，仅优化当前帧位姿。   2. 与“局部建图线程 (Local Mapping)”的区别  局部地图 (Local Map) - 用于本阶段（局部地图跟踪）  数据：由局部关键帧及其观测到的局部地图点构成。 功能：为当前帧提供投影匹配候选，仅优化当前帧位姿。不改变关键帧位姿，也不改变地图点三维坐标。 本质：“用图”来精调当前帧。   局部建图线程 (Local Mapping) - 独立线程  数据：处理新生成的关键帧。 功能：  生成新的地图点。 进行局部BA (Bundle Adjustment)，同时优化局部区域内的关键帧位姿和地图点坐标。 剔除冗余关键帧和不可靠地图点。   本质：“建图”与“维护图”。     3. 局部地图跟踪的核心步骤  第 1...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#relocalization"><span class="toc-text"> Relocalization</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80-%E6%A0%B8%E5%BF%83%E7%9B%AE%E6%A0%87%E4%B8%8E%E8%A7%A6%E5%8F%91%E6%97%B6%E6%9C%BA"><span class="toc-text"> 一、核心目标与触发时机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C-%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3%E5%85%A8%E5%B1%80%E6%90%9C%E7%B4%A2%E4%B8%8E%E5%B1%80%E9%83%A8%E9%AA%8C%E8%AF%81"><span class="toc-text"> 二、核心思想：全局搜索与局部验证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF%E4%B8%8E%E8%AF%A6%E7%BB%86%E6%B5%81%E7%A8%8B"><span class="toc-text"> 三、关键技术与详细流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#a-%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95-inverted-index-%E5%8A%A0%E9%80%9F%E5%80%99%E9%80%89%E5%85%B3%E9%94%AE%E5%B8%A7%E6%90%9C%E7%B4%A2"><span class="toc-text"> A. 倒排索引 (Inverted Index) - 加速候选关键帧搜索</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#b-%E6%90%9C%E7%B4%A2%E9%87%8D%E5%AE%9A%E4%BD%8D%E5%80%99%E9%80%89%E5%85%B3%E9%94%AE%E5%B8%A7-keyframedatabasedetectrelocalizationcandidatesframe-f"><span class="toc-text"> B. 搜索重定位候选关键帧 (KeyFrameDatabase::DetectRelocalizationCandidates(Frame *F))</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#c-%E6%89%A7%E8%A1%8C%E9%87%8D%E5%AE%9A%E4%BD%8D%E5%B0%9D%E8%AF%95-trackingrelocalization"><span class="toc-text"> C. 执行重定位尝试 (Tracking::Relocalization())</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-%E9%87%8D%E5%AE%9A%E4%BD%8D%E6%95%88%E6%9E%9C%E4%B8%8E%E9%87%8D%E8%A6%81%E6%80%A7"><span class="toc-text"> 四、重定位效果与重要性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94-%E6%80%BB%E7%BB%93"><span class="toc-text"> 五、总结</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(async () => {
+  const showKatex = () => {
+    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
+  }
 
-      const script = document.createElement('script')
-      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
-      script.id = 'MathJax-script'
-      script.async = true
-      document.head.appendChild(script)
-    } else {
-      MathJax.startup.document.state(0)
-      MathJax.texReset()
-      MathJax.typesetPromise()
+  if (!window.katex_js_css) {
+    window.katex_js_css = true
+    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css')
+    if (false) {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js')
     }
   }
 
-  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
-  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+  showKatex()
 })()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

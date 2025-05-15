@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>投影匹配--帧间跟踪版 | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="(SearchByProjection) 函数1. 函数目标与核心思想SearchByProjection 是 ORB-SLAM2 中用于连续帧间跟踪 (Frame-to-Frame Tracking) 的核心函数之一。 核心思想：利用上一帧 (LastFrame) 已经构建好的三维地图点 (MapPoint)，结合当前帧 (CurrentFrame) 的初始位姿估计，来预测这些三维点在当前帧图像">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>投影匹配--帧间跟踪版 | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="(SearchByProjection) 函数  1. 函数目标与核心思想 SearchByProjection 是 ORB-SLAM2 中用于连续帧间跟踪 (Frame-to-Frame Tracking) 的核心函数之一。 核心思想：利用上一帧 (LastFrame) 已经构建好的三维地图点 (MapPoint)，结合当前帧 (CurrentFrame) 的初始位姿估计，来预测这些三维点在当">
 <meta property="og:type" content="article">
 <meta property="og:title" content="投影匹配--帧间跟踪版">
 <meta property="og:url" content="https://feiyblog.netlify.app/2025/05/13/orbslam2-5/index.html">
 <meta property="og:site_name" content="我的学习笔记">
-<meta property="og:description" content="(SearchByProjection) 函数1. 函数目标与核心思想SearchByProjection 是 ORB-SLAM2 中用于连续帧间跟踪 (Frame-to-Frame Tracking) 的核心函数之一。 核心思想：利用上一帧 (LastFrame) 已经构建好的三维地图点 (MapPoint)，结合当前帧 (CurrentFrame) 的初始位姿估计，来预测这些三维点在当前帧图像">
+<meta property="og:description" content="(SearchByProjection) 函数  1. 函数目标与核心思想 SearchByProjection 是 ORB-SLAM2 中用于连续帧间跟踪 (Frame-to-Frame Tracking) 的核心函数之一。 核心思想：利用上一帧 (LastFrame) 已经构建好的三维地图点 (MapPoint)，结合当前帧 (CurrentFrame) 的初始位姿估计，来预测这些三维点在当">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png">
 <meta property="article:published_time" content="2025-05-13T07:18:43.000Z">
@@ -168,33 +168,44 @@ btf.addGlobalFn('pjaxComplete', () => {
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">投影匹配--帧间跟踪版</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">投影匹配--帧间跟踪版</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-13T07:18:43.000Z" title="发表于 2025-05-13 15:18:43">2025-05-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-13T07:19:25.183Z" title="更新于 2025-05-13 15:19:25">2025-05-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/SLAM/">SLAM</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="SearchByProjection-函数"><a href="#SearchByProjection-函数" class="headerlink" title="(SearchByProjection) 函数"></a>(SearchByProjection) 函数</h1><h2 id="1-函数目标与核心思想"><a href="#1-函数目标与核心思想" class="headerlink" title="1. 函数目标与核心思想"></a>1. 函数目标与核心思想</h2><p><code>SearchByProjection</code> 是 ORB-SLAM2 中用于<strong>连续帧间跟踪 (Frame-to-Frame Tracking)</strong> 的核心函数之一。</p>
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">投影匹配--帧间跟踪版</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">投影匹配--帧间跟踪版</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-13T07:18:43.000Z" title="发表于 2025-05-13 15:18:43">2025-05-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-13T07:19:25.183Z" title="更新于 2025-05-13 15:19:25">2025-05-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/SLAM/">SLAM</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="searchbyprojection-函数"><a class="markdownIt-Anchor" href="#searchbyprojection-函数"></a> (SearchByProjection) 函数</h1>
+<h2 id="1-函数目标与核心思想"><a class="markdownIt-Anchor" href="#1-函数目标与核心思想"></a> 1. 函数目标与核心思想</h2>
+<p><code>SearchByProjection</code> 是 ORB-SLAM2 中用于<strong>连续帧间跟踪 (Frame-to-Frame Tracking)</strong> 的核心函数之一。</p>
 <p><strong>核心思想</strong>：利用<strong>上一帧 (<code>LastFrame</code>) 已经构建好的三维地图点 (<code>MapPoint</code>)</strong>，结合<strong>当前帧 (<code>CurrentFrame</code>) 的初始位姿估计</strong>，来<strong>预测</strong>这些三维点在当前帧图像上的二维投影位置。然后在这些投影位置附近的小范围内搜索，以找到对应的二维特征点，从而建立匹配关系。</p>
 <p>这是一种<strong>基于模型的预测与搜索策略</strong>，比盲目搜索或纯二维匹配更高效和鲁棒。</p>
-<h2 id="2-前提条件"><a href="#2-前提条件" class="headerlink" title="2. 前提条件"></a>2. 前提条件</h2><ul>
+<h2 id="2-前提条件"><a class="markdownIt-Anchor" href="#2-前提条件"></a> 2. 前提条件</h2>
+<ul>
 <li><code>LastFrame</code> 中已经有一些特征点被成功三角化，并形成了稳定的 <code>MapPoint</code>（即已知其三维世界坐标）。</li>
-<li>对 <code>CurrentFrame</code> 的相机位姿 <code>CurrentFrame.mTcw</code> (从世界坐标系到当前相机坐标系的变换) 有一个初始的估计。这个估计可能来自：<ul>
+<li>对 <code>CurrentFrame</code> 的相机位姿 <code>CurrentFrame.mTcw</code> (从世界坐标系到当前相机坐标系的变换) 有一个初始的估计。这个估计可能来自：
+<ul>
 <li>匀速运动模型。</li>
 <li>上一帧成功跟踪后的位姿。</li>
 <li>重定位成功后的位姿。</li>
 </ul>
 </li>
 </ul>
-<h2 id="3-主要执行步骤与思想"><a href="#3-主要执行步骤与思想" class="headerlink" title="3. 主要执行步骤与思想"></a>3. 主要执行步骤与思想</h2><h3 id="a-准备工作与帧间运动估计-Code-Steps-1-2"><a href="#a-准备工作与帧间运动估计-Code-Steps-1-2" class="headerlink" title="a. 准备工作与帧间运动估计 (Code Steps 1, 2)"></a>a. 准备工作与帧间运动估计 (Code Steps 1, 2)</h3><ul>
-<li><strong>初始化旋转直方图 (<code>rotHist</code>)</strong> (Code Step 1):<ul>
+<h2 id="3-主要执行步骤与思想"><a class="markdownIt-Anchor" href="#3-主要执行步骤与思想"></a> 3. 主要执行步骤与思想</h2>
+<h3 id="a-准备工作与帧间运动估计-code-steps-1-2"><a class="markdownIt-Anchor" href="#a-准备工作与帧间运动估计-code-steps-1-2"></a> a. 准备工作与帧间运动估计 (Code Steps 1, 2)</h3>
+<ul>
+<li><strong>初始化旋转直方图 (<code>rotHist</code>)</strong> (Code Step 1):
+<ul>
 <li><strong>思想</strong>：用于后续的旋转一致性检查，以剔除外点。直方图统计匹配特征点对之间的主方向角度差。</li>
 </ul>
 </li>
-<li><strong>计算当前帧相对于上一帧的运动信息</strong> (Code Step 2):<ul>
+<li><strong>计算当前帧相对于上一帧的运动信息</strong> (Code Step 2):
+<ul>
 <li><strong>思想</strong>：了解相机是前进、后退还是基本保持距离，对于后续指导特征搜索的尺度（金字塔层级）非常重要。</li>
 <li>通过两帧的位姿，计算出当前相机中心在上一帧相机坐标系下的平移向量 <code>tlc</code>。</li>
 <li>根据 <code>tlc</code> 的 Z 分量判断前进 (<code>bForward</code>) 或后退 (<code>bBackward</code>) 状态（主要针对非单目）。</li>
 </ul>
 </li>
 </ul>
-<h3 id="b-投影地图点并进行局部搜索-Code-Steps-3-4"><a href="#b-投影地图点并进行局部搜索-Code-Steps-3-4" class="headerlink" title="b. 投影地图点并进行局部搜索 (Code Steps 3, 4)"></a>b. 投影地图点并进行局部搜索 (Code Steps 3, 4)</h3><ul>
-<li><strong>遍历 <code>LastFrame</code> 的有效地图点 (<code>MapPoint</code>)</strong> (Code Step 3):<ul>
-<li>对于每个与 <code>LastFrame</code> 特征点关联的 <code>MapPoint</code>：<ol>
+<h3 id="b-投影地图点并进行局部搜索-code-steps-3-4"><a class="markdownIt-Anchor" href="#b-投影地图点并进行局部搜索-code-steps-3-4"></a> b. 投影地图点并进行局部搜索 (Code Steps 3, 4)</h3>
+<ul>
+<li><strong>遍历 <code>LastFrame</code> 的有效地图点 (<code>MapPoint</code>)</strong> (Code Step 3):
+<ul>
+<li>对于每个与 <code>LastFrame</code> 特征点关联的 <code>MapPoint</code>：
+<ol>
 <li>获取其三维世界坐标 <code>x3Dw</code>。</li>
 <li>使用 <code>CurrentFrame</code> 的位姿 <code>Rcw</code>, <code>tcw</code> 将 <code>x3Dw</code> 变换到当前相机坐标系下，得到 <code>x3Dc</code>。</li>
 <li><strong>检查有效性</strong>：确保点在相机前方 (<code>invzc &gt; 0</code>)。</li>
@@ -204,10 +215,12 @@ btf.addGlobalFn('pjaxComplete', () => {
 </li>
 </ul>
 </li>
-<li><strong>在投影点附近使用 <code>GetFeaturesInArea</code> 进行局部搜索</strong> (Code Step 4):<ul>
+<li><strong>在投影点附近使用 <code>GetFeaturesInArea</code> 进行局部搜索</strong> (Code Step 4):
+<ul>
 <li><strong>思想</strong>：由于位姿估计、地图点定位等存在误差，真实匹配点会在投影位置附近。同时，物体由于相机远近移动，其在图像中的尺度会变化。</li>
 <li><strong>确定搜索半径 <code>radius</code></strong>：基于上一帧特征点的金字塔层级进行缩放 (<code>th * CurrentFrame.mvScaleFactors[nLastOctave]</code>)。尺度大的特征（通常对应更远或更大的物体部分，或者在低分辨率金字塔层级检测到的特征），其不确定性可能更大，搜索半径也相应调整。</li>
-<li><strong>自适应搜索金字塔层级</strong>：<ul>
+<li><strong>自适应搜索金字塔层级</strong>：
+<ul>
 <li>若相机前进 (<code>bForward</code>)：物体变大，当前帧特征可能在更高或相同层级。搜索范围 <code>[nLastOctave, maxLevel]</code>。</li>
 <li>若相机后退 (<code>bBackward</code>)：物体变小，当前帧特征可能在更低或相同层级。搜索范围 <code>[0, nLastOctave]</code>。</li>
 <li>若相机运动不明显：在上一帧层级附近搜索，如 <code>[nLastOctave-1, nLastOctave+1]</code>。</li>
@@ -217,76 +230,53 @@ btf.addGlobalFn('pjaxComplete', () => {
 </ul>
 </li>
 </ul>
-<h3 id="c-描述子匹配与最佳选择-Code-Step-5"><a href="#c-描述子匹配与最佳选择-Code-Step-5" class="headerlink" title="c. 描述子匹配与最佳选择 (Code Step 5)"></a>c. 描述子匹配与最佳选择 (Code Step 5)</h3><ul>
+<h3 id="c-描述子匹配与最佳选择-code-step-5"><a class="markdownIt-Anchor" href="#c-描述子匹配与最佳选择-code-step-5"></a> c. 描述子匹配与最佳选择 (Code Step 5)</h3>
+<ul>
 <li><strong>思想</strong>：在位置和尺度上接近的候选点中，通过特征描述子的相似性（外观）来确定最佳匹配。</li>
-<li>遍历 <code>vIndices2</code> 中的候选特征点：<ol>
+<li>遍历 <code>vIndices2</code> 中的候选特征点：
+<ol>
 <li><strong>排除已匹配点</strong>：若当前帧的候选特征点已有关联地图点，则跳过。</li>
-<li><strong>（可选）双目&#x2F;RGB-D 一致性检查</strong>：对右目图像或深度值进行额外约束。</li>
+<li><strong>（可选）双目/RGB-D 一致性检查</strong>：对右目图像或深度值进行额外约束。</li>
 <li><strong>计算描述子距离</strong>：计算 <code>LastFrame</code> 地图点 <code>pMP</code> 的描述子与当前帧候选特征点描述子之间的汉明距离 (<code>DescriptorDistance</code>)。</li>
 <li><strong>选择最佳匹配</strong>：在所有候选点中，选择汉明距离最小且小于阈值 <code>TH_HIGH</code> 的作为最佳匹配点 <code>bestIdx2</code>。</li>
 </ol>
 </li>
 </ul>
-<h3 id="d-存储匹配并更新旋转直方图-Code-Step-6"><a href="#d-存储匹配并更新旋转直方图-Code-Step-6" class="headerlink" title="d. 存储匹配并更新旋转直方图 (Code Step 6)"></a>d. 存储匹配并更新旋转直方图 (Code Step 6)</h3><ul>
-<li>如果找到有效匹配：<ol>
+<h3 id="d-存储匹配并更新旋转直方图-code-step-6"><a class="markdownIt-Anchor" href="#d-存储匹配并更新旋转直方图-code-step-6"></a> d. 存储匹配并更新旋转直方图 (Code Step 6)</h3>
+<ul>
+<li>如果找到有效匹配：
+<ol>
 <li>在 <code>CurrentFrame</code> 中记录该匹配：<code>CurrentFrame.mvpMapPoints[bestIdx2] = pMP</code>。</li>
 <li>增加成功匹配计数 <code>nmatches</code>。</li>
 <li>若启用朝向检查 (<code>mbCheckOrientation</code>)：计算 <code>LastFrame</code> 特征点与 <code>CurrentFrame</code> 匹配特征点的主方向角度差，更新 <code>rotHist</code> 直方图。</li>
 </ol>
 </li>
 </ul>
-<h3 id="e-旋转一致性检查与外点剔除-Code-Step-7"><a href="#e-旋转一致性检查与外点剔除-Code-Step-7" class="headerlink" title="e. 旋转一致性检查与外点剔除 (Code Step 7)"></a>e. 旋转一致性检查与外点剔除 (Code Step 7)</h3><ul>
+<h3 id="e-旋转一致性检查与外点剔除-code-step-7"><a class="markdownIt-Anchor" href="#e-旋转一致性检查与外点剔除-code-step-7"></a> e. 旋转一致性检查与外点剔除 (Code Step 7)</h3>
+<ul>
 <li><strong>思想</strong>：利用刚体场景下特征点旋转角度变化的一致性来剔除误匹配。</li>
 <li>分析 <code>rotHist</code> 直方图，找出票数最高的前三个主导旋转角度区间。</li>
 <li>遍历所有之前建立的匹配，如果某个匹配的角度差不在这三个主导区间内，则将其视作外点，并从当前帧的匹配中移除 (<code>CurrentFrame.mvpMapPoints[rotHist[i][j]] = NULL</code>)，同时减少 <code>nmatches</code>。</li>
 </ul>
-<h2 id="4-函数优势"><a href="#4-函数优势" class="headerlink" title="4. 函数优势"></a>4. 函数优势</h2><ul>
+<h2 id="4-函数优势"><a class="markdownIt-Anchor" href="#4-函数优势"></a> 4. 函数优势</h2>
+<ul>
 <li><strong>高效性</strong>：通过投影预测，将搜索范围大大缩小，避免了全局或大范围的盲目搜索。</li>
 <li><strong>鲁棒性</strong>：结合了位置预测、尺度自适应、外观（描述子）匹配以及几何（旋转）一致性等多重约束，能够有效地找到正确匹配并剔除外点。</li>
 <li><strong>利用地图信息</strong>：充分利用了已建立的地图点信息，使得跟踪更为稳定。</li>
 </ul>
 <p>此方法是视觉 SLAM 中实现稳定、高效帧间跟踪的关键技术之一。</p>
-</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/05/13/orbslam2-4/" title="通过词袋进行匹配"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">通过词袋进行匹配</div></div><div class="info-2"><div class="info-item-1">词袋模型 (Bag-of-Words, BoW)1. 基本概念词袋模型源于自然语言处理，在计算机视觉中被借鉴用于图像表示和检索。其核心思想是：  将图像看作是由一些基本的“视觉单词”（Visual Words）组成的文档。 忽略特征点的空间布局信息（至少在生成 BoW 向量时），只关心图像中出现了哪些视觉单词以及它们的频率。 目的是得到一个能够概括图像内容的、紧凑的全局描述符。  2. ORB-SLAM2 中的 BoW 实现a. 视觉词典 (Visual Vocabulary &#x2F; Dictionary) 构建：这是一个离线预训练的过程。使用大量不同场景下的 ORB 特征描述子，通过聚类算法（如层次 K-Means）构建一个词典树（Vocabulary Tree）。 结构：树的叶子节点代表一个视觉单词。每个视觉单词对应着描述子空间中的一个聚类中心。词典通常包含大量（例如 $10^4$ - $10^6$）视觉单词。 作用：提供一个标准化的参照系，用于将连续的 ORB 描述子**量化（Quantize）**为离散的视觉单词 ID。  b....</div></div></div></a><a class="pagination-related" href="/2025/05/13/orbslam2-6/" title="投影匹配--闭环版"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">投影匹配--闭环版</div></div><div class="info-2"><div class="info-item-1">1. 函数背景与目标这个特定版本的 SearchByProjection 函数在 ORB-SLAM2 的闭环检测 (Loop Closing) 流程中被调用。  调用时机：当系统检测到一个潜在的闭环（当前关键帧 pKF 与过去的某个关键帧 pLoopKF 在同一位置），并且已经成功计算出连接这两个关键帧位姿的 Sim3 变换矩阵 Scw 之后。 函数目标：利用已知的 Scw 变换，为当前关键帧 pKF 中那些尚未建立地图点关联的特征点，去寻找并建立与闭环候选帧 pLoopKF 及其共视帧相关的地图点 (vpPoints) 之间的新匹配关系。其核心目的是增加闭环约束的数量和质量。  2. 核心思想利用已计算出的 Sim3 变换 Scw 作为几何先验，指导特征匹配过程，从而在两个看似分离的地图部分之间建立更多可靠的连接点。 具体来说，是将 pLoopKF 相关区域的 3D 地图点 (vpPoints)，通过 Scw 变换投影到当前关键帧 pKF 的图像平面上，然后在投影点附近搜索匹配的 pKF 特征点。 3. 主要执行步骤与思想解析a. 输入与准备 (Code Step 1...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SearchByProjection-%E5%87%BD%E6%95%B0"><span class="toc-text">(SearchByProjection) 函数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%87%BD%E6%95%B0%E7%9B%AE%E6%A0%87%E4%B8%8E%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3"><span class="toc-text">1. 函数目标与核心思想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6"><span class="toc-text">2. 前提条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%B8%BB%E8%A6%81%E6%89%A7%E8%A1%8C%E6%AD%A5%E9%AA%A4%E4%B8%8E%E6%80%9D%E6%83%B3"><span class="toc-text">3. 主要执行步骤与思想</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#a-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E4%B8%8E%E5%B8%A7%E9%97%B4%E8%BF%90%E5%8A%A8%E4%BC%B0%E8%AE%A1-Code-Steps-1-2"><span class="toc-text">a. 准备工作与帧间运动估计 (Code Steps 1, 2)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#b-%E6%8A%95%E5%BD%B1%E5%9C%B0%E5%9B%BE%E7%82%B9%E5%B9%B6%E8%BF%9B%E8%A1%8C%E5%B1%80%E9%83%A8%E6%90%9C%E7%B4%A2-Code-Steps-3-4"><span class="toc-text">b. 投影地图点并进行局部搜索 (Code Steps 3, 4)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#c-%E6%8F%8F%E8%BF%B0%E5%AD%90%E5%8C%B9%E9%85%8D%E4%B8%8E%E6%9C%80%E4%BD%B3%E9%80%89%E6%8B%A9-Code-Step-5"><span class="toc-text">c. 描述子匹配与最佳选择 (Code Step 5)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#d-%E5%AD%98%E5%82%A8%E5%8C%B9%E9%85%8D%E5%B9%B6%E6%9B%B4%E6%96%B0%E6%97%8B%E8%BD%AC%E7%9B%B4%E6%96%B9%E5%9B%BE-Code-Step-6"><span class="toc-text">d. 存储匹配并更新旋转直方图 (Code Step 6)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#e-%E6%97%8B%E8%BD%AC%E4%B8%80%E8%87%B4%E6%80%A7%E6%A3%80%E6%9F%A5%E4%B8%8E%E5%A4%96%E7%82%B9%E5%89%94%E9%99%A4-Code-Step-7"><span class="toc-text">e. 旋转一致性检查与外点剔除 (Code Step 7)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%87%BD%E6%95%B0%E4%BC%98%E5%8A%BF"><span class="toc-text">4. 函数优势</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
-  const loadMathjax = () => {
-    if (!window.MathJax) {
-      window.MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']],
-          tags: 'none',
-        },
-        chtml: {
-          scale: 1.1
-        },
-        options: {
-          enableMenu: true,
-          renderActions: {
-            findScript: [10, doc => {
-              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
-                const display = !!node.type.match(/; *mode=display/)
-                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
-                const text = document.createTextNode('')
-                node.parentNode.replaceChild(text, node)
-                math.start = {node: text, delim: '', n: 0}
-                math.end = {node: text, delim: '', n: 0}
-                doc.math.push(math)
-              }
-            }, '']
-          }
-        }
-      }
+</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/05/13/orbslam2-4/" title="通过词袋进行匹配"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">通过词袋进行匹配</div></div><div class="info-2"><div class="info-item-1"> 词袋模型 (Bag-of-Words, BoW)  1. 基本概念 词袋模型源于自然语言处理，在计算机视觉中被借鉴用于图像表示和检索。其核心思想是：  将图像看作是由一些基本的“视觉单词”（Visual Words）组成的文档。 忽略特征点的空间布局信息（至少在生成 BoW 向量时），只关心图像中出现了哪些视觉单词以及它们的频率。 目的是得到一个能够概括图像内容的、紧凑的全局描述符。   2. ORB-SLAM2 中的 BoW 实现  a. 视觉词典 (Visual Vocabulary / Dictionary)  构建：这是一个离线预训练的过程。使用大量不同场景下的 ORB 特征描述子，通过聚类算法（如层次 K-Means）构建一个词典树（Vocabulary Tree）。 结构：树的叶子节点代表一个视觉单词。每个视觉单词对应着描述子空间中的一个聚类中心。词典通常包含大量（例如 10410^4104 - 10610^6106）视觉单词。 作用：提供一个标准化的参照系，用于将连续的 ORB 描述子**量化（Quantize）**为离散的视觉单词 ID。   b....</div></div></div></a><a class="pagination-related" href="/2025/05/13/orbslam2-6/" title="投影匹配--闭环版"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">投影匹配--闭环版</div></div><div class="info-2"><div class="info-item-1"> 1. 函数背景与目标 这个特定版本的 SearchByProjection 函数在 ORB-SLAM2 的闭环检测 (Loop Closing) 流程中被调用。  调用时机：当系统检测到一个潜在的闭环（当前关键帧 pKF 与过去的某个关键帧 pLoopKF 在同一位置），并且已经成功计算出连接这两个关键帧位姿的 Sim3 变换矩阵 Scw 之后。 函数目标：利用已知的 Scw 变换，为当前关键帧 pKF 中那些尚未建立地图点关联的特征点，去寻找并建立与闭环候选帧 pLoopKF 及其共视帧相关的地图点 (vpPoints) 之间的新匹配关系。其核心目的是增加闭环约束的数量和质量。   2. 核心思想 利用已计算出的 Sim3 变换 Scw 作为几何先验，指导特征匹配过程，从而在两个看似分离的地图部分之间建立更多可靠的连接点。 具体来说，是将 pLoopKF 相关区域的 3D 地图点 (vpPoints)，通过 Scw 变换投影到当前关键帧 pKF 的图像平面上，然后在投影点附近搜索匹配的 pKF 特征点。  3. 主要执行步骤与思想解析  a. 输入与准备 (Code...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#searchbyprojection-%E5%87%BD%E6%95%B0"><span class="toc-text"> (SearchByProjection) 函数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%87%BD%E6%95%B0%E7%9B%AE%E6%A0%87%E4%B8%8E%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3"><span class="toc-text"> 1. 函数目标与核心思想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%89%8D%E6%8F%90%E6%9D%A1%E4%BB%B6"><span class="toc-text"> 2. 前提条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%B8%BB%E8%A6%81%E6%89%A7%E8%A1%8C%E6%AD%A5%E9%AA%A4%E4%B8%8E%E6%80%9D%E6%83%B3"><span class="toc-text"> 3. 主要执行步骤与思想</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#a-%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E4%B8%8E%E5%B8%A7%E9%97%B4%E8%BF%90%E5%8A%A8%E4%BC%B0%E8%AE%A1-code-steps-1-2"><span class="toc-text"> a. 准备工作与帧间运动估计 (Code Steps 1, 2)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#b-%E6%8A%95%E5%BD%B1%E5%9C%B0%E5%9B%BE%E7%82%B9%E5%B9%B6%E8%BF%9B%E8%A1%8C%E5%B1%80%E9%83%A8%E6%90%9C%E7%B4%A2-code-steps-3-4"><span class="toc-text"> b. 投影地图点并进行局部搜索 (Code Steps 3, 4)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#c-%E6%8F%8F%E8%BF%B0%E5%AD%90%E5%8C%B9%E9%85%8D%E4%B8%8E%E6%9C%80%E4%BD%B3%E9%80%89%E6%8B%A9-code-step-5"><span class="toc-text"> c. 描述子匹配与最佳选择 (Code Step 5)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#d-%E5%AD%98%E5%82%A8%E5%8C%B9%E9%85%8D%E5%B9%B6%E6%9B%B4%E6%96%B0%E6%97%8B%E8%BD%AC%E7%9B%B4%E6%96%B9%E5%9B%BE-code-step-6"><span class="toc-text"> d. 存储匹配并更新旋转直方图 (Code Step 6)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#e-%E6%97%8B%E8%BD%AC%E4%B8%80%E8%87%B4%E6%80%A7%E6%A3%80%E6%9F%A5%E4%B8%8E%E5%A4%96%E7%82%B9%E5%89%94%E9%99%A4-code-step-7"><span class="toc-text"> e. 旋转一致性检查与外点剔除 (Code Step 7)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%87%BD%E6%95%B0%E4%BC%98%E5%8A%BF"><span class="toc-text"> 4. 函数优势</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(async () => {
+  const showKatex = () => {
+    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
+  }
 
-      const script = document.createElement('script')
-      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
-      script.id = 'MathJax-script'
-      script.async = true
-      document.head.appendChild(script)
-    } else {
-      MathJax.startup.document.state(0)
-      MathJax.texReset()
-      MathJax.typesetPromise()
+  if (!window.katex_js_css) {
+    window.katex_js_css = true
+    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css')
+    if (false) {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js')
     }
   }
 
-  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
-  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+  showKatex()
 })()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

@@ -1,9 +1,9 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>关键帧类 | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="KeyFrame（关键帧）是 ORB_SLAM2 系统中非常核心的一个概念和数据结构。它不是每一帧都创建，而是从普通的 Frame 对象中选取具有代表性的帧来创建。关键帧构成了地图的基础，用于跟踪、局部建图和回环检测。 以下是对 KeyFrame 类的详细解析： 1. 关键帧的角色与创建 作用：关键帧是地图的基本单元，存储了比普通帧更持久和重要的信息，用于优化相机轨迹和构建环境地图。它们之间通过共">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>关键帧类 | 我的学习笔记</title><meta name="author" content="Xue"><meta name="copyright" content="Xue"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="KeyFrame（关键帧）是 ORB_SLAM2 系统中非常核心的一个概念和数据结构。它不是每一帧都创建，而是从普通的 Frame 对象中选取具有代表性的帧来创建。关键帧构成了地图的基础，用于跟踪、局部建图和回环检测。 以下是对 KeyFrame 类的详细解析：  1. 关键帧的角色与创建  作用：关键帧是地图的基本单元，存储了比普通帧更持久和重要的信息，用于优化相机轨迹和构建环境地图。它们之间通">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关键帧类">
 <meta property="og:url" content="https://feiyblog.netlify.app/2025/05/13/orbslam2-2/index.html">
 <meta property="og:site_name" content="我的学习笔记">
-<meta property="og:description" content="KeyFrame（关键帧）是 ORB_SLAM2 系统中非常核心的一个概念和数据结构。它不是每一帧都创建，而是从普通的 Frame 对象中选取具有代表性的帧来创建。关键帧构成了地图的基础，用于跟踪、局部建图和回环检测。 以下是对 KeyFrame 类的详细解析： 1. 关键帧的角色与创建 作用：关键帧是地图的基本单元，存储了比普通帧更持久和重要的信息，用于优化相机轨迹和构建环境地图。它们之间通过共">
+<meta property="og:description" content="KeyFrame（关键帧）是 ORB_SLAM2 系统中非常核心的一个概念和数据结构。它不是每一帧都创建，而是从普通的 Frame 对象中选取具有代表性的帧来创建。关键帧构成了地图的基础，用于跟踪、局部建图和回环检测。 以下是对 KeyFrame 类的详细解析：  1. 关键帧的角色与创建  作用：关键帧是地图的基本单元，存储了比普通帧更持久和重要的信息，用于优化相机轨迹和构建环境地图。它们之间通">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231548587.png">
 <meta property="article:published_time" content="2025-05-13T07:14:52.000Z">
@@ -168,85 +168,101 @@ btf.addGlobalFn('pjaxComplete', () => {
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231548587.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">关键帧类</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">关键帧类</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-13T07:14:52.000Z" title="发表于 2025-05-13 15:14:52">2025-05-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-13T07:15:43.432Z" title="更新于 2025-05-13 15:15:43">2025-05-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/SLAM/">SLAM</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><code>KeyFrame</code>（关键帧）是 ORB_SLAM2 系统中非常核心的一个概念和数据结构。它不是每一帧都创建，而是从普通的 <code>Frame</code> 对象中选取具有代表性的帧来创建。关键帧构成了地图的基础，用于跟踪、局部建图和回环检测。</p>
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(171, 169, 169, 1) 100%, rgba(237, 221, 83, 1) 100%);;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231548587.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">我的学习笔记</span></a><a class="nav-page-title" href="/"><span class="site-name">关键帧类</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">关键帧类</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-13T07:14:52.000Z" title="发表于 2025-05-13 15:14:52">2025-05-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-13T07:15:43.432Z" title="更新于 2025-05-13 15:15:43">2025-05-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/SLAM/">SLAM</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p><code>KeyFrame</code>（关键帧）是 ORB_SLAM2 系统中非常核心的一个概念和数据结构。它不是每一帧都创建，而是从普通的 <code>Frame</code> 对象中选取具有代表性的帧来创建。关键帧构成了地图的基础，用于跟踪、局部建图和回环检测。</p>
 <p>以下是对 <code>KeyFrame</code> 类的详细解析：</p>
-<h3 id="1-关键帧的角色与创建"><a href="#1-关键帧的角色与创建" class="headerlink" title="1. 关键帧的角色与创建"></a><strong>1. 关键帧的角色与创建</strong></h3><ul>
+<h3 id="1-关键帧的角色与创建"><a class="markdownIt-Anchor" href="#1-关键帧的角色与创建"></a> <strong>1. 关键帧的角色与创建</strong></h3>
+<ul>
 <li><strong>作用</strong>：关键帧是地图的基本单元，存储了比普通帧更持久和重要的信息，用于优化相机轨迹和构建环境地图。它们之间通过共视图（Covisibility Graph）和生成树（Spanning Tree）等结构连接起来。</li>
 <li><strong>创建</strong>：关键帧由一个 <code>Frame</code> 对象、一个指向地图 <code>Map</code> 的指针和一个指向关键帧数据库 <code>KeyFrameDatabase</code> 的指针来构造。构造时，它会从父 <code>Frame</code> 复制大量信息，如时间戳、相机参数、特征点、描述子、地图点关联等，并被赋予一个唯一的 <code>mnId</code>。</li>
 </ul>
-<h3 id="2-核心数据成员（属性）"><a href="#2-核心数据成员（属性）" class="headerlink" title="2. 核心数据成员（属性）"></a><strong>2. 核心数据成员（属性）</strong></h3><p><code>KeyFrame</code> 类包含了众多成员变量来存储其状态和信息，主要分为几类：</p>
+<h3 id="2-核心数据成员属性"><a class="markdownIt-Anchor" href="#2-核心数据成员属性"></a> <strong>2. 核心数据成员（属性）</strong></h3>
+<p><code>KeyFrame</code> 类包含了众多成员变量来存储其状态和信息，主要分为几类：</p>
 <ul>
-<li><strong>标识与时间戳</strong>：<ul>
+<li><strong>标识与时间戳</strong>：
+<ul>
 <li><code>mnId</code>: 关键帧的唯一 ID。</li>
 <li><code>mnFrameId</code>: 创建此关键帧的原始 <code>Frame</code> 的 ID。</li>
 <li><code>mTimeStamp</code>: 时间戳。</li>
 </ul>
 </li>
-<li><strong>位姿信息</strong>：<ul>
+<li><strong>位姿信息</strong>：
+<ul>
 <li><code>Tcw</code>: 从世界坐标系到当前相机坐标系的变换矩阵。</li>
 <li><code>Twc</code>: 从相机坐标系到世界坐标系的变换矩阵（Tcw 的逆）。</li>
 <li><code>Ow</code>: 相机光心在世界坐标系下的坐标。</li>
 <li>这些位姿信息通过 <code>mMutexPose</code> 互斥锁保护，需要通过 <code>SetPose</code>, <code>GetPose</code>, <code>GetPoseInverse</code>, <code>GetCameraCenter</code> 等函数访问。</li>
 </ul>
 </li>
-<li><strong>相机与图像信息</strong>：<ul>
+<li><strong>相机与图像信息</strong>：
+<ul>
 <li>相机内参 (<code>fx</code>, <code>fy</code>, <code>cx</code>, <code>cy</code>, <code>invfx</code>, <code>invfy</code>, <code>mK</code>)。</li>
-<li>双目&#x2F;深度信息 (<code>mbf</code>, <code>mb</code>, <code>mThDepth</code>)。</li>
+<li>双目/深度信息 (<code>mbf</code>, <code>mb</code>, <code>mThDepth</code>)。</li>
 <li>图像边界 (<code>mnMinX</code>, <code>mnMinY</code>, <code>mnMaxX</code>, <code>mnMaxY</code>)。</li>
 <li>图像网格 (<code>mGrid</code>)：用于加速特征点匹配，存储每个网格单元内的特征点索引。</li>
 </ul>
 </li>
-<li><strong>特征点与描述子</strong>：<ul>
+<li><strong>特征点与描述子</strong>：
+<ul>
 <li><code>N</code>: 特征点数量。</li>
 <li><code>mvKeys</code>: 原始特征点 (cv::KeyPoint 格式)。</li>
 <li><code>mvKeysUn</code>: 去畸变后的归一化特征点坐标。</li>
 <li><code>mDescriptors</code>: 特征点的 ORB 描述子。</li>
-<li><code>mvuRight</code> &#x2F; <code>mvDepth</code>: 双目或 RGB-D 下特征点的右图像坐标或深度信息。</li>
+<li><code>mvuRight</code> / <code>mvDepth</code>: 双目或 RGB-D 下特征点的右图像坐标或深度信息。</li>
 </ul>
 </li>
-<li><strong>地图点关联</strong>：<ul>
+<li><strong>地图点关联</strong>：
+<ul>
 <li><code>mvpMapPoints</code>: 一个 <code>std::vector&lt;MapPoint*&gt;</code>，存储与该关键帧中特征点关联的地图点指针。如果某个特征点没有关联地图点，或关联的地图点被删除，则对应指针为 <code>NULL</code>。该变量由 <code>mMutexFeatures</code> 保护。</li>
 </ul>
 </li>
-<li><strong>词袋模型 (BoW)</strong>：<ul>
+<li><strong>词袋模型 (BoW)</strong>：
+<ul>
 <li><code>mBowVec</code>: DBoW2 格式的词袋向量，用于快速进行图像识别（回环检测、重定位）。</li>
 <li><code>mFeatVec</code>: DBoW2 格式的特征向量，记录了特征点到词典内部节点的映射关系。</li>
 <li>通过 <code>ComputeBoW()</code> 函数计算生成。</li>
 </ul>
 </li>
-<li><strong>图结构信息</strong>（由 <code>mMutexConnections</code> 保护）：<ul>
-<li><strong>共视图 (Covisibility Graph)</strong>：<ul>
+<li><strong>图结构信息</strong>（由 <code>mMutexConnections</code> 保护）：
+<ul>
+<li><strong>共视图 (Covisibility Graph)</strong>：
+<ul>
 <li><code>mConnectedKeyFrameWeights</code>: 存储与其他关键帧的连接及其权重（共视地图点数量）。</li>
 <li><code>mvpOrderedConnectedKeyFrames</code>, <code>mvOrderedWeights</code>: 按权重排序后的共视关键帧列表及其权重。</li>
 </ul>
 </li>
-<li><strong>生成树 (Spanning Tree)</strong>：<ul>
+<li><strong>生成树 (Spanning Tree)</strong>：
+<ul>
 <li><code>mpParent</code>: 指向父关键帧（通常是共视程度最高的那个）。</li>
 <li><code>mspChildrens</code>: 指向子关键帧的集合。</li>
 </ul>
 </li>
-<li><strong>回环边 (Loop Edges)</strong>：<ul>
+<li><strong>回环边 (Loop Edges)</strong>：
+<ul>
 <li><code>mspLoopEdges</code>: 存储与当前关键帧形成闭环关系的关键帧集合。</li>
 </ul>
 </li>
 </ul>
 </li>
-<li><strong>状态标志</strong>：<ul>
+<li><strong>状态标志</strong>：
+<ul>
 <li><code>mbBad</code>: 标记该关键帧是否已被标记为“坏点”，准备或已经被删除。</li>
 <li><code>mbNotErase</code>, <code>mbToBeErased</code>: 用于控制删除逻辑，例如在进行回环优化时暂时阻止删除。</li>
 </ul>
 </li>
-<li><strong>指针</strong>：<ul>
+<li><strong>指针</strong>：
+<ul>
 <li><code>mpMap</code>: 指向所属的 <code>Map</code> 对象。</li>
 <li><code>mpKeyFrameDB</code>: 指向 <code>KeyFrameDatabase</code>。</li>
 <li><code>mpORBvocabulary</code>: 指向 ORB 词典。</li>
 </ul>
 </li>
 </ul>
-<h3 id="3-核心功能（成员函数）"><a href="#3-核心功能（成员函数）" class="headerlink" title="3. 核心功能（成员函数）"></a><strong>3. 核心功能（成员函数）</strong></h3><ul>
+<h3 id="3-核心功能成员函数"><a class="markdownIt-Anchor" href="#3-核心功能成员函数"></a> <strong>3. 核心功能（成员函数）</strong></h3>
+<ul>
 <li><strong>位姿管理</strong>：<code>SetPose</code> 设置位姿并计算相关变量 (Ow, Twc)，<code>GetPose</code> 等函数提供线程安全的位姿访问。</li>
 <li><strong>BoW 计算</strong>：<code>ComputeBoW</code> 使用 ORB 词典计算关键帧的词袋表示。</li>
-<li><strong>共视图管理</strong>：<ul>
+<li><strong>共视图管理</strong>：
+<ul>
 <li><code>AddConnection</code>: 添加与其他关键帧的共视连接。</li>
 <li><code>EraseConnection</code>: 删除共视连接。</li>
 <li><code>UpdateConnections</code>: 核心函数，根据共享的地图点重新计算并更新与其他关键帧的共视权重和连接关系。</li>
@@ -256,7 +272,8 @@ btf.addGlobalFn('pjaxComplete', () => {
 </li>
 <li><strong>生成树管理</strong>：<code>AddChild</code>, <code>EraseChild</code>, <code>ChangeParent</code>, <code>GetChilds</code>, <code>GetParent</code>, <code>hasChild</code> 用于维护生成树结构。</li>
 <li><strong>回环边管理</strong>：<code>AddLoopEdge</code>, <code>GetLoopEdges</code> 用于记录和查询回环信息。</li>
-<li><strong>地图点管理</strong>：<ul>
+<li><strong>地图点管理</strong>：
+<ul>
 <li><code>AddMapPoint</code>: 关联一个地图点到指定的特征点索引。</li>
 <li><code>EraseMapPointMatch</code>: 断开与某个地图点的关联（将指针设为 NULL）。</li>
 <li><code>ReplaceMapPointMatch</code>: 替换某个索引处的地图点关联。</li>
@@ -264,28 +281,35 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li><code>TrackedMapPoints</code>: 统计被有效跟踪（观测次数达标）的地图点数量。</li>
 </ul>
 </li>
-<li><strong>特征点相关操作</strong>：<ul>
+<li><strong>特征点相关操作</strong>：
+<ul>
 <li><code>GetFeaturesInArea</code>: 在指定区域内快速查找特征点。</li>
 <li><code>UnprojectStereo</code>: 将双目或 RGB-D 特征点反投影到三维空间。</li>
 <li><code>IsInImage</code>: 判断某个二维点是否在图像范围内。</li>
 </ul>
 </li>
-<li><strong>删除管理</strong>：<ul>
+<li><strong>删除管理</strong>：
+<ul>
 <li><code>SetNotErase</code>, <code>SetErase</code>: 控制是否允许删除该关键帧。</li>
 <li><code>SetBadFlag</code>: 标记关键帧为坏点，并执行复杂的清理逻辑，包括：断开与其他关键帧的连接、通知地图点移除观测、更新生成树结构、从地图和关键帧数据库中移除自身。这是一个非常关键的操作，确保地图结构的完整性。</li>
 <li><code>isBad</code>: 查询关键帧是否已被标记为坏点。</li>
 </ul>
 </li>
-<li><strong>其他</strong>：<ul>
+<li><strong>其他</strong>：
+<ul>
 <li><code>ComputeSceneMedianDepth</code>: 估计场景深度（主要用于单目初始化）。</li>
 </ul>
 </li>
 </ul>
-<h3 id="4-线程安全"><a href="#4-线程安全" class="headerlink" title="4. 线程安全"></a><strong>4. 线程安全</strong></h3><p>由于 ORB_SLAM2 是多线程系统（Tracking, Local Mapping, Loop Closing），<code>KeyFrame</code> 的很多数据会被多个线程同时访问。因此，关键数据（位姿、图连接、地图点关联）都使用了 <code>std::mutex</code> 进行保护，以确保线程安全。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><code>KeyFrame</code> 类是 ORB_SLAM2 中地图表示的核心，它不仅存储了自身的详细信息（位姿、特征、BoW），更重要的是维护了与其他关键帧（通过共视图、生成树、回环边）和地图点之间的复杂连接关系。这些关系是 SLAM 系统进行优化和保持一致性的基础。对 <code>KeyFrame</code> 的管理（创建、更新连接、删除）是 Local Mapping 和 Loop Closing 线程的关键任务。</p>
-<h2 id="何时插入关键帧"><a href="#何时插入关键帧" class="headerlink" title="何时插入关键帧"></a>何时插入关键帧</h2><ol>
+<h3 id="4-线程安全"><a class="markdownIt-Anchor" href="#4-线程安全"></a> <strong>4. 线程安全</strong></h3>
+<p>由于 ORB_SLAM2 是多线程系统（Tracking, Local Mapping, Loop Closing），<code>KeyFrame</code> 的很多数据会被多个线程同时访问。因此，关键数据（位姿、图连接、地图点关联）都使用了 <code>std::mutex</code> 进行保护，以确保线程安全。</p>
+<h3 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> <strong>总结</strong></h3>
+<p><code>KeyFrame</code> 类是 ORB_SLAM2 中地图表示的核心，它不仅存储了自身的详细信息（位姿、特征、BoW），更重要的是维护了与其他关键帧（通过共视图、生成树、回环边）和地图点之间的复杂连接关系。这些关系是 SLAM 系统进行优化和保持一致性的基础。对 <code>KeyFrame</code> 的管理（创建、更新连接、删除）是 Local Mapping 和 Loop Closing 线程的关键任务。</p>
+<h2 id="何时插入关键帧"><a class="markdownIt-Anchor" href="#何时插入关键帧"></a> 何时插入关键帧</h2>
+<ol>
 <li><strong>距离上一个关键帧足够远</strong>: 确保自从上一次插入关键帧后，已经过了一定的时间或者处理了足够数量的帧，以防止关键帧插入过于密集。</li>
-<li><strong>跟踪质量下降</strong>: 当前帧能够稳定跟踪到的地图点数量显著减少。这通常通过以下两种方式之一来判断：<ul>
+<li><strong>跟踪质量下降</strong>: 当前帧能够稳定跟踪到的地图点数量显著减少。这通常通过以下两种方式之一来判断：
+<ul>
 <li>当前帧跟踪到的地图点总数低于某个下限阈值。</li>
 <li>当前帧跟踪到的地图点数量，相比于其参考关键帧（通常是距离最近的关键帧）所能看到的地图点数量，低于一个特定的比例（例如90%）。这表明视角或场景发生了显著变化。</li>
 </ul>
@@ -294,47 +318,18 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li><strong>满足最小跟踪点数</strong>: 即使满足了与参考关键帧的比例条件，通常也要求当前帧跟踪到的点数不能过少（要高于另一个更低的阈值），以保证关键帧的质量。</li>
 </ol>
 <p>简单来说，插入关键帧是为了在<strong>视角变化足够大（跟踪点减少）、距离上一关键帧有一定间隔、且后端处理单元有能力处理</strong>时，向地图中添加新的、带有足够信息的节点。</p>
-</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231548587.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/05/13/orbslam2-1/" title="mappoint类"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231542722.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">mappoint类</div></div><div class="info-2"><div class="info-item-1">MapPoint 类的核心定位：场景中的三维点 简单来说，MapPoint 类代表了在三维真实世界中的一个静态点。在 SLAM 系统运行过程中，相机会从不同的视角观测到场景中的特征点（比如墙角、纹理清晰的物体表面等）。当系统通过三角化等方法确定了这些二维图像特征点对应的三维空间位置后，就会创建一个 MapPoint 对象来存储这个三维点的信息。 MapPoint 类的主要职责和包含的信息： MapPoint 类不仅仅存储一个三维点的坐标，它还包含了大量与这个三维点相关的观测信息、几何属性以及在 SLAM 系统不同模块中用于追踪和优化的状态信息。 以下是 MapPoint 类的主要成员变量和功能的概览：  1. 核心属性 (Core Properties):  mWorldPos (类型: cv::Mat): 含义: 地图点在世界坐标系下的三维坐标 (通常是一个 3x1 的列向量)。这是 MapPoint 最基本也是最重要的信息。 获取&#x2F;设置: 通过 GetWorldPos() 和 SetWorldPos() 方法。   mnId (类型: long unsigned...</div></div></div></a><a class="pagination-related" href="/2025/05/13/orbslam2-3/" title="单目初始化中的特征匹配"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">单目初始化中的特征匹配</div></div><div class="info-2"><div class="info-item-1">Frame::GetFeaturesInArea 函数1. 函数目标该函数的核心目的是在给定的图像帧 (Frame) 中，高效地查找满足以下条件的特征点：  位于以指定点 (x, y) 为圆心、r 为半径的圆形区域内。 其所在的图像金字塔层级 (octave) 在指定的 [minLevel, maxLevel] 范围内（可选）。  这在特征匹配、局部地图跟踪等场景中非常常用，需要在某个预期位置附近搜索对应的特征点。 2. 面临的挑战与常规思路如果图像中有大量特征点（例如上千个），最直观的方法是：  遍历当前帧中的所有特征点。 对每一个特征点，计算它到圆心 (x, y) 的距离。 判断距离是否小于 r，并且层级是否符合要求。  缺点： 计算量巨大，需要对所有点进行距离计算，对于实时性要求高的 SLAM 系统来说效率太低。 3. ORB-SLAM2 的优化策略：网格化加速 (Grid-based Acceleration)为了解决效率问题，ORB-SLAM2 采用了空间划分的思想，具体为网格化：  预处理：在提取特征点后，系统会根据每个特征点的坐标，将其分配到预先划分好的二维网格...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%85%B3%E9%94%AE%E5%B8%A7%E7%9A%84%E8%A7%92%E8%89%B2%E4%B8%8E%E5%88%9B%E5%BB%BA"><span class="toc-text">1. 关键帧的角色与创建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%A0%B8%E5%BF%83%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98%EF%BC%88%E5%B1%9E%E6%80%A7%EF%BC%89"><span class="toc-text">2. 核心数据成员（属性）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%EF%BC%88%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0%EF%BC%89"><span class="toc-text">3. 核心功能（成员函数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="toc-text">4. 线程安全</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%95%E6%97%B6%E6%8F%92%E5%85%A5%E5%85%B3%E9%94%AE%E5%B8%A7"><span class="toc-text">何时插入关键帧</span></a></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
-  const loadMathjax = () => {
-    if (!window.MathJax) {
-      window.MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']],
-          tags: 'none',
-        },
-        chtml: {
-          scale: 1.1
-        },
-        options: {
-          enableMenu: true,
-          renderActions: {
-            findScript: [10, doc => {
-              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
-                const display = !!node.type.match(/; *mode=display/)
-                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
-                const text = document.createTextNode('')
-                node.parentNode.replaceChild(text, node)
-                math.start = {node: text, delim: '', n: 0}
-                math.end = {node: text, delim: '', n: 0}
-                doc.math.push(math)
-              }
-            }, '']
-          }
-        }
-      }
+</article><div class="tag_share"><div class="post-share"><div class="social-share" data-image="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231548587.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/05/13/orbslam2-1/" title="mappoint类"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231542722.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">mappoint类</div></div><div class="info-2"><div class="info-item-1">MapPoint 类的核心定位：场景中的三维点 简单来说，MapPoint 类代表了在三维真实世界中的一个静态点。在 SLAM 系统运行过程中，相机会从不同的视角观测到场景中的特征点（比如墙角、纹理清晰的物体表面等）。当系统通过三角化等方法确定了这些二维图像特征点对应的三维空间位置后，就会创建一个 MapPoint 对象来存储这个三维点的信息。 MapPoint 类的主要职责和包含的信息： MapPoint 类不仅仅存储一个三维点的坐标，它还包含了大量与这个三维点相关的观测信息、几何属性以及在 SLAM 系统不同模块中用于追踪和优化的状态信息。 以下是 MapPoint 类的主要成员变量和功能的概览：  1. 核心属性 (Core Properties):  mWorldPos (类型: cv::Mat):  含义: 地图点在世界坐标系下的三维坐标 (通常是一个 3x1 的列向量)。这是 MapPoint 最基本也是最重要的信息。 获取/设置: 通过 GetWorldPos() 和 SetWorldPos() 方法。   mnId (类型: long unsigned...</div></div></div></a><a class="pagination-related" href="/2025/05/13/orbslam2-3/" title="单目初始化中的特征匹配"><img class="cover" src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250428231554898.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">单目初始化中的特征匹配</div></div><div class="info-2"><div class="info-item-1"> Frame::GetFeaturesInArea 函数  1. 函数目标 该函数的核心目的是在给定的图像帧 (Frame) 中，高效地查找满足以下条件的特征点：  位于以指定点 (x, y) 为圆心、r 为半径的圆形区域内。 其所在的图像金字塔层级 (octave) 在指定的 [minLevel, maxLevel] 范围内（可选）。  这在特征匹配、局部地图跟踪等场景中非常常用，需要在某个预期位置附近搜索对应的特征点。  2. 面临的挑战与常规思路 如果图像中有大量特征点（例如上千个），最直观的方法是：  遍历当前帧中的所有特征点。 对每一个特征点，计算它到圆心 (x, y) 的距离。 判断距离是否小于 r，并且层级是否符合要求。  缺点： 计算量巨大，需要对所有点进行距离计算，对于实时性要求高的 SLAM 系统来说效率太低。  3. ORB-SLAM2 的优化策略：网格化加速 (Grid-based Acceleration) 为了解决效率问题，ORB-SLAM2...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="https://fyblog.oss-cn-shanghai.aliyuncs.com/blog/20250423093410435.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Xue</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%85%B3%E9%94%AE%E5%B8%A7%E7%9A%84%E8%A7%92%E8%89%B2%E4%B8%8E%E5%88%9B%E5%BB%BA"><span class="toc-text"> 1. 关键帧的角色与创建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%A0%B8%E5%BF%83%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98%E5%B1%9E%E6%80%A7"><span class="toc-text"> 2. 核心数据成员（属性）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="toc-text"> 3. 核心功能（成员函数）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="toc-text"> 4. 线程安全</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text"> 总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%95%E6%97%B6%E6%8F%92%E5%85%A5%E5%85%B3%E9%94%AE%E5%B8%A7"><span class="toc-text"> 何时插入关键帧</span></a></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Xue</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(async () => {
+  const showKatex = () => {
+    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
+  }
 
-      const script = document.createElement('script')
-      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
-      script.id = 'MathJax-script'
-      script.async = true
-      document.head.appendChild(script)
-    } else {
-      MathJax.startup.document.state(0)
-      MathJax.texReset()
-      MathJax.typesetPromise()
+  if (!window.katex_js_css) {
+    window.katex_js_css = true
+    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css')
+    if (false) {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js')
     }
   }
 
-  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
-  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+  showKatex()
 })()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
